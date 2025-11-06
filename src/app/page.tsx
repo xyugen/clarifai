@@ -1,7 +1,9 @@
+import { Text } from "@/components/retroui/Text";
+
 export default async function Home() {
   return (
     <main>
-      <h1>Welcome to ClarifAI!</h1>
+      <Text as={"h1"}>Welcome to ClarifAI!</Text>
     </main>
   );
 }
