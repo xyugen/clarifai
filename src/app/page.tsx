@@ -1,7 +1,10 @@
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
+import { TextLink } from "@/components/retroui/TextLink";
+import { PageRoutes } from "@/constants/page-routes";
 import {
+  ArrowRight,
   Brain,
   Download,
   FileText,
@@ -9,8 +12,11 @@ import {
   TrendingUp,
   Upload,
 } from "lucide-react";
+import Link from "next/link";
 
 export default async function Home() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <main>
       <div className="min-h-screen bg-cyan-100">
@@ -24,20 +30,25 @@ export default async function Home() {
               <Text as={"h4"}>ClarifAI</Text>
             </div>
             <div className="hidden items-center gap-6 md:flex">
-              <Text as={"a"} className="font-bold decoration-4 hover:underline">
+              <TextLink
+                href={PageRoutes.LOGIN}
+                className="font-bold decoration-4 hover:underline"
+              >
                 Login
-              </Text>
-              <Button variant="default" className="text-sm">
-                Get Started
-              </Button>
+              </TextLink>
+              <Link href={PageRoutes.SIGNUP}>
+                <Button variant="default" className="text-sm">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         </nav>
 
         {/* Hero */}
         <div className="mx-auto max-w-7xl px-4 py-16 md:py-24">
-          <div className="mb-12 flex flex-col items-center text-center">
-            <div className="flex flex-row gap-2 justify-center items-center border-foreground mb-6 -rotate-1 border-4 bg-pink-400 px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <section className="mb-12 flex flex-col items-center text-center">
+            <div className="border-foreground mb-6 flex -rotate-1 flex-row items-center justify-center gap-2 border-4 bg-pink-400 px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <Sparkles className="fill-primary size-6" />
               <span className="font-bold">AI-POWERED LEARNING</span>
             </div>
@@ -50,23 +61,25 @@ export default async function Home() {
               </span>
             </h1>
 
-            <Text as={"p"} className="mx-auto mb-10 max-w-2xl text-xl font-bold md:text-2xl">
+            <Text
+              as={"p"}
+              className="mx-auto mb-10 max-w-2xl text-xl font-bold md:text-2xl"
+            >
               Upload your lessons. Get smart questions. Receive AI feedback.
               <span className="text-blue-600"> Actually understand</span> what
               you&lsquo;re learning.
             </Text>
 
-            <Button
-              variant="default"
-              className="text-lg"
-              // onClick={() => setActiveTab("upload")}
-            >
-              START LEARNING NOW →
-            </Button>
-          </div>
+            <Link href={PageRoutes.SIGNUP}>
+              <Button variant="default" className="space-x-2 text-lg">
+                <span>START LEARNING NOW</span>
+                <ArrowRight className="size-5" />
+              </Button>
+            </Link>
+          </section>
 
           {/* Features */}
-          <div id="features" className="mb-16">
+          <section id="features" className="mb-16">
             <Text
               as={"h2"}
               className="mb-12 text-center text-4xl font-black md:text-5xl"
@@ -122,10 +135,10 @@ export default async function Home() {
                 </Card>
               ))}
             </div>
-          </div>
+          </section>
 
           {/* How It Works */}
-          <div
+          <section
             id="how"
             className="border-4 border-black bg-black p-12 text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,0.5)]"
           >
@@ -170,8 +183,13 @@ export default async function Home() {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         </div>
+
+        {/* Footer */}
+        <footer className="border-t-4 border-black bg-white p-6 text-center">
+          <Text as={"p"}>© {currentYear} ClarifAI. All rights reserved.</Text>
+        </footer>
       </div>
     </main>
   );
