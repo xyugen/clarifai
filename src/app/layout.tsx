@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Archivo_Black, Space_Grotesk } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import { Toaster } from "@/components/retroui/Sonner";
 
 export const metadata: Metadata = {
   title: "ClarifAI",
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${archivoBlack.variable} ${space.variable}`}>
         <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Toaster />
       </body>
     </html>
   );

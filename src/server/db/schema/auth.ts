@@ -8,10 +8,7 @@ export const user = createTable("user", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   emailVerified: integer("emailVerified", { mode: "boolean" }),
-  role: text("role"),
-  banned: integer("banned", { mode: "boolean" }),
-  banReason: text("banReason"),
-  banExpires: integer("banExpires", { mode: "timestamp" }),
+  image: text("image"),
   createdAt: integer("createdAt", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -29,6 +26,7 @@ export const session = createTable("session", {
   token: text("token"),
   expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
   ipAddress: text("ipAddress"), // optional
+  userAgent: text("userAgent"), // optional
   createdAt: integer("createdAt", { mode: "timestamp" }),
   updatedAt: integer("updatedAt", { mode: "timestamp" }),
 });
