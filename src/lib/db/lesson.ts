@@ -2,7 +2,9 @@ import { db } from "@/server/db";
 import {
   question as questionTable,
   topic as topicTable,
+  user,
 } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 
 export const saveLesson = async ({
   title,
@@ -48,4 +50,35 @@ export const saveLesson = async ({
   }
 
   return topic.id;
+};
+
+export const getLesson = async (lessonId: string) => {
+  const [topic] = await db
+    .select({
+      id: topicTable.id,
+      title: topicTable.title,
+      author: user.name,
+      summary: topicTable.summary,
+      createdAt: topicTable.createdAt,
+    })
+    .from(topicTable)
+    .leftJoin(user, eq(user.id, topicTable.author))
+    .where(eq(topicTable.id, lessonId))
+    .limit(1)
+    .execute();
+
+  if (!topic) {
+    throw new Error("Lesson not found");
+  }
+
+  const questions = await db
+    .select()
+    .from(questionTable)
+    .where(eq(questionTable.topicId, topic.id))
+    .execute();
+
+  return {
+    topic,
+    questions,
+  };
 };

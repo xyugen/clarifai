@@ -1,3 +1,4 @@
+import { TOPIC_VISIBILITY } from "@/constants/lesson";
 import { sql } from "drizzle-orm";
 import { integer, text } from "drizzle-orm/sqlite-core";
 import { createTable } from "../table";
@@ -10,6 +11,9 @@ export const topic = createTable("topic", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   summary: text("summary"),
+  visibility: text("visibility", { enum: TOPIC_VISIBILITY })
+    .notNull()
+    .default("private"),
   createdAt: integer("createdAt", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

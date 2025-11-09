@@ -7,4 +7,5 @@ export enum PageRoutes {
   DASHBOARD = "/dashboard",
   SETTINGS = "/settings",
   UPLOAD = "/upload",
+  STUDY = "/study",
 }

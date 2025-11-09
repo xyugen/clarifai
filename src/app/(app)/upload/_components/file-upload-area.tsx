@@ -5,15 +5,19 @@ import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { Select } from "@/components/retroui/Select";
 import { Text } from "@/components/retroui/Text";
+import { PageRoutes } from "@/constants/page-routes";
 import { api } from "@/trpc/react";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import type { TRPCError } from "@trpc/server";
 import { ArrowRight, CheckCircle2, FileText, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import LoadingScreen from "./loading-screen";
 
 const FileUploadArea = () => {
+  const router = useRouter();
+
   const fileUploadMutation = api.ai.generateQuestionsFromPDF.useMutation();
 
   const [file, setFile] = useState<File | null>(null);
@@ -40,6 +44,10 @@ const FileUploadArea = () => {
 
       await fileUploadMutation
         .mutateAsync(formData)
+        .then((res) => {
+          toast.success("File uploaded successfully!");
+          router.push(`${PageRoutes.STUDY}/${res.topicId}`);
+        })
         .catch((error: TRPCError) => {
           toast.error(error.message);
         });
