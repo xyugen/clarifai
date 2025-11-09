@@ -1,10 +1,13 @@
 "use client";
 
-import React from "react";
-import QuickActionCard from "./quick-action-card";
+import { PageRoutes } from "@/constants/page-routes";
 import { BookOpen, Brain, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
+import QuickActionCard from "./quick-action-card";
 
 const QuickActionCards = () => {
+  const router = useRouter();
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       <QuickActionCard
@@ -16,7 +19,7 @@ const QuickActionCards = () => {
         bgColor="bg-pink-300"
         badgeColor="bg-pink-200"
         onClick={() => {
-          console.log("Upload PDF clicked");
+          router.push(PageRoutes.UPLOAD);
         }}
       />
 

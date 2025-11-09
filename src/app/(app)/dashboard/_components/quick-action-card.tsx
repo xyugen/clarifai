@@ -28,13 +28,15 @@ const QuickActionCard = (props: QuickActionCardProps) => {
           <Badge className={props.badgeColor}>{props.badgeText}</Badge>
         </div>
         <Card.Title>{props.title}</Card.Title>
-        <Card.Description className="text-gray-700">{props.description}</Card.Description>
+        <Card.Description className="text-gray-700">
+          {props.description}
+        </Card.Description>
       </Card.Header>
       <Card.Content>
         <Button
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full hover:shadow! active:shadow-none!"
           onClick={props.onClick}
         >
           <span className="mr-2">{props.buttonText}</span>
