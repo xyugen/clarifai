@@ -17,7 +17,7 @@ const Layout = async ({
   }
 
   return (
-    <div className="min-h-screen bg-cyan-100 font-sans antialiased">
+    <div className="relative min-h-screen bg-cyan-100 font-sans antialiased">
       <TopNav user={session.user} />
       {children}
     </div>

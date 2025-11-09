@@ -3,16 +3,39 @@
 import FileUpload from "@/components/file-upload";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
+import { api } from "@/trpc/react";
 import { ArrowRight, CheckCircle2, FileText, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import LoadingScreen from "./loading-screen";
 
 const FileUploadArea = () => {
+  const fileUploadMutation = api.ai.parsePDF.useMutation();
+
   const [file, setFile] = useState<File | null>(null);
 
   const handleClear = () => setFile(null);
 
+  const handleUpload = async () => {
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      fileUploadMutation.mutate(formData);
+      setFile(null);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Failed to import PDF");
+      }
+    }
+  };
+
   return (
     <>
+      {fileUploadMutation.isPending && <LoadingScreen />}
+
       {!file ? (
         <FileUpload
           maxFiles={1}
@@ -45,6 +68,7 @@ const FileUploadArea = () => {
                 size="sm"
                 className="bg-red-100 font-sans text-red-600 hover:bg-red-200"
                 onClick={handleClear}
+                disabled={fileUploadMutation.isPending}
               >
                 <Trash2 className="mr-1 size-4" /> Clear
               </Button>
@@ -52,7 +76,7 @@ const FileUploadArea = () => {
           </Card>
 
           <div className="mt-4 text-center">
-            <Button size="md">
+            <Button size="md" onClick={handleUpload}>
               Continue <ArrowRight className="ml-2 size-5" />
             </Button>
             <p className="mt-2 text-sm text-gray-600 italic">
