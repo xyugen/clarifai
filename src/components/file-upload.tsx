@@ -47,11 +47,11 @@ const FileUpload = ({
 
       <div className="mt-6 flex flex-col items-center gap-2 text-center text-gray-700">
         <UploadCloud className="size-12 text-gray-600" />
-        <Text>Drag and drop your file here</Text>
+        <Text className="text-lg">Drag and drop your file here</Text>
         <Text className="text-sm text-gray-500 italic">
           PDF only — one file at a time
           <br />
-          Max: {maxFileSizeInMB} MB
+          <span className="font-semibold">Max: {maxFileSizeInMB} MB</span>
         </Text>
       </div>
     </div>

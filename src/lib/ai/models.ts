@@ -13,11 +13,11 @@ export const models: Array<Model> = [
     description: "Designed to handle a wide range of tasks effectively.",
   },
   {
-    id: "gpt-oss-120b",
+    id: "openai/gpt-oss-120b",
     label: "GPT OSS 120B",
-    apiIdentifier: "gpt-oss-120b",
+    apiIdentifier: "openai/gpt-oss-120b",
     description: " Designed for high-capability agentic use.",
   },
 ] as const;
 
-export const DEFAULT_MODEL_NAME = "llama-3.3-70b-versatile";
+export const DEFAULT_MODEL_NAME = "openai/gpt-oss-120b";

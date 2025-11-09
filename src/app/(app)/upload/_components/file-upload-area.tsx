@@ -3,33 +3,55 @@
 import FileUpload from "@/components/file-upload";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
+import { Select } from "@/components/retroui/Select";
+import { Text } from "@/components/retroui/Text";
 import { api } from "@/trpc/react";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import type { TRPCError } from "@trpc/server";
 import { ArrowRight, CheckCircle2, FileText, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import LoadingScreen from "./loading-screen";
 
 const FileUploadArea = () => {
-  const fileUploadMutation = api.ai.parsePDF.useMutation();
+  const fileUploadMutation = api.ai.generateQuestionsFromPDF.useMutation();
 
   const [file, setFile] = useState<File | null>(null);
+  const [numberOfQuestions, setNumberOfQuestions] = useState<string>("5");
+  const [difficulty, setDifficulty] = useState<string>("medium");
+  const [loading, setLoading] = useState(false);
 
-  const handleClear = () => setFile(null);
+  const handleClear = () => {
+    setFile(null);
+    setNumberOfQuestions("5");
+    setDifficulty("medium");
+  };
 
   const handleUpload = async () => {
+    setLoading(true);
+
     if (!file) return;
 
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("numQuestions", numberOfQuestions);
+      formData.append("difficulty", difficulty);
 
-      fileUploadMutation.mutate(formData);
+      await fileUploadMutation
+        .mutateAsync(formData)
+        .catch((error: TRPCError) => {
+          toast.error(error.message);
+        });
       setFile(null);
+      setNumberOfQuestions("5");
+      setDifficulty("medium");
     } catch (error) {
       if (error instanceof Error) {
         toast.error("Failed to import PDF");
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -39,6 +61,7 @@ const FileUploadArea = () => {
       {!file ? (
         <FileUpload
           maxFiles={1}
+          maxFileSizeInMB={5}
           onFilesSelected={(selected) => {
             const selectedFile = selected[0];
             if (selectedFile) setFile(selectedFile);
@@ -52,31 +75,78 @@ const FileUploadArea = () => {
 
           <Card className="flex items-center justify-between p-4">
             <div className="flex items-center gap-4">
-              <FileText className="size-6 text-gray-700" />
+              <FileText className="hidden size-6 text-gray-700 md:block" />
               <div>
-                <p className="text-lg font-bold">{file.name}</p>
-                <p className="text-sm text-gray-500">
+                <Text className="text-base font-bold md:text-lg">
+                  {file.name}
+                </Text>
+                <Text className="text-sm text-gray-500">
                   {(file.size / 1024).toFixed(1)} KB
-                </p>
+                </Text>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
               <CheckCircle2 className="size-6 text-green-600" />
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
                 className="bg-red-100 font-sans text-red-600 hover:bg-red-200"
                 onClick={handleClear}
-                disabled={fileUploadMutation.isPending}
+                disabled={fileUploadMutation.isPending && loading}
               >
                 <Trash2 className="mr-1 size-4" /> Clear
               </Button>
             </div>
           </Card>
 
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <div>
+              <Label className="mb-2 block">Number of Questions</Label>
+              <Select
+                defaultValue={numberOfQuestions}
+                onValueChange={setNumberOfQuestions}
+              >
+                <Select.Trigger className="w-60 bg-white">
+                  <Select.Value />
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Group>
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+                      <Select.Item key={num} value={num.toString()}>
+                        {num}
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Content>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="mb-2 block">Difficulty of Questions</Label>
+              <Select defaultValue={difficulty} onValueChange={setDifficulty}>
+                <Select.Trigger className="w-60 bg-white">
+                  <Select.Value />
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Group>
+                    {["easy", "medium", "hard"].map((level) => (
+                      <Select.Item key={level} value={level}>
+                        {level.charAt(0).toUpperCase() + level.slice(1)}
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Content>
+              </Select>
+            </div>
+          </div>
+
           <div className="mt-4 text-center">
-            <Button size="md" onClick={handleUpload}>
+            <Button
+              size="md"
+              onClick={handleUpload}
+              disabled={fileUploadMutation.isPending && loading}
+            >
               Continue <ArrowRight className="ml-2 size-5" />
             </Button>
             <p className="mt-2 text-sm text-gray-600 italic">

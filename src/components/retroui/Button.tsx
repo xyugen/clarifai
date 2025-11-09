@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { ButtonHTMLAttributes } from "react";
-import { Slot } from "@radix-ui/react-slot";
 
 const buttonVariants = cva(
   "font-head transition-all rounded outline-hidden cursor-pointer duration-200 font-medium flex items-center",
@@ -9,9 +9,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "shadow-md hover:shadow active:shadow-none bg-primary text-primary-foreground border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover",
+          "shadow-md hover:shadow active:shadow-none bg-primary text-primary-foreground border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover disabled:bg-gray-300 disabled:hover:translate-0 disabled:hover:shadow-md disabled:text-gray-600",
         secondary:
-          "shadow-md hover:shadow active:shadow-none bg-secondary shadow-primary text-secondary-foreground border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-secondary-hover",
+          "shadow-md hover:shadow active:shadow-none bg-secondary shadow-primary text-secondary-foreground border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-secondary-hover disabled:bg-gray-300 disabled:hover:translate-0 disabled:hover:shadow-md disabled:text-gray-600",
         outline:
           "shadow-md hover:shadow active:shadow-none bg-transparent border-2 transition hover:translate-y-1 active:translate-y-2 active:translate-x-1",
         link: "bg-transparent hover:underline",
