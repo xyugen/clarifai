@@ -7,9 +7,9 @@ export interface Model {
 
 export const models: Array<Model> = [
   {
-    id: "llama-3.1-70b-versatile",
+    id: "llama-3.3-70b-versatile",
     label: "Llama 3.1",
-    apiIdentifier: "llama-3.1-70b-versatile",
+    apiIdentifier: "llama-3.3-70b-versatile",
     description: "Designed to handle a wide range of tasks effectively.",
   },
   {
@@ -20,4 +20,4 @@ export const models: Array<Model> = [
   },
 ] as const;
 
-export const DEFAULT_MODEL_NAME = "llama-3.1-70b-versatile";
+export const DEFAULT_MODEL_NAME = "llama-3.3-70b-versatile";
