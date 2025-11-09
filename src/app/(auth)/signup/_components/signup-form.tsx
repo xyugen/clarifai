@@ -35,7 +35,8 @@ const SignUpForm = () => {
       }),
       {
         loading: "Signing up...",
-        success: "Signed up successfully!",
+        success:
+          "Account created! Please check your email to verify your account.",
         error: "Failed to sign up.",
       },
     );
