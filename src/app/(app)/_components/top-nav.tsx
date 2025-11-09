@@ -23,7 +23,7 @@ const TopNav = ({ user }: { user: User | null }) => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b-4 border-black bg-white">
+    <nav className="sticky top-0 z-50 border-b-2 border-black bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <Title />
 
