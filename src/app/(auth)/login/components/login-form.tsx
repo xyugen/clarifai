@@ -3,13 +3,9 @@
 import { Button } from "@/components/retroui/Button";
 import { Checkbox } from "@/components/retroui/Checkbox";
 import { Input } from "@/components/retroui/Input";
+import { Label } from "@/components/retroui/Label";
 import { TextLink } from "@/components/retroui/TextLink";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { PageRoutes } from "@/constants/page-routes";
 import { authClient } from "@/server/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +31,7 @@ const LoginForm = () => {
         email,
         password,
         rememberMe,
-        callbackURL: PageRoutes.DASHBOARD
+        callbackURL: PageRoutes.DASHBOARD,
       }),
       {
         loading: "Signing in...",
@@ -49,7 +45,7 @@ const LoginForm = () => {
     <form
       id="form-login"
       onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-2"
+      className="space-y-4"
     >
       <FieldGroup>
         <Controller
@@ -57,9 +53,7 @@ const LoginForm = () => {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="email" className="font-bold">
-                Email
-              </FieldLabel>
+              <Label htmlFor="email">Email</Label>
               <Input
                 {...field}
                 id="email"
@@ -79,9 +73,7 @@ const LoginForm = () => {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="password" className="mt-4 mb-2 font-bold">
-                Password
-              </FieldLabel>
+              <Label htmlFor="password">Password</Label>
               <Input
                 {...field}
                 id="password"
@@ -109,7 +101,9 @@ const LoginForm = () => {
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
-                <FieldLabel htmlFor="rememberMe">REMEMBER ME</FieldLabel>
+                <Label htmlFor="rememberMe" className="text-sm">
+                  REMEMBER ME
+                </Label>
               </Field>
             )}
           />
