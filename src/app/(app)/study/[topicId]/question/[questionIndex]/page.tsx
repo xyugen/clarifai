@@ -1,12 +1,11 @@
-import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { api } from "@/trpc/server";
-import { Lightbulb, Send, Sparkles } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { redirect } from "next/navigation";
-import TopNav from "./_components/top-nav";
 import QuestionCard from "./_components/question-card";
+import TopNav from "./_components/top-nav";
 
 const Page = async ({
   params,
@@ -41,6 +40,7 @@ const Page = async ({
 
       <div className="mx-auto max-w-4xl px-4 py-8">
         <QuestionCard
+          questionId={question.id}
           currentQuestionIndex={questionIndexInt}
           totalQuestions={totalQuestions}
           questionText={question.text}
@@ -49,7 +49,7 @@ const Page = async ({
         {/* Tip Card */}
         <Card className="border-2 bg-purple-100 p-5">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center border-2 border-black bg-purple-400">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-black bg-purple-400">
               <Lightbulb className="h-5 w-5" strokeWidth={3} />
             </div>
             <div>

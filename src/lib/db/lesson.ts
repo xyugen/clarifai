@@ -112,7 +112,7 @@ export const getQuestionByIndex = async (
     .where(eq(questionTable.topicId, topicId))
     .execute();
 
-  const totalQuestions: number = Number(totalResult?.[0]?.totalQuestions ?? 0);
+  const totalQuestions = Number(totalResult?.[0]?.totalQuestions ?? 0);
 
   // Validate requested index
   if (questionIndex < 1 || questionIndex > totalQuestions) {
@@ -133,4 +133,20 @@ export const getQuestionByIndex = async (
   }
 
   return { topic, question, totalQuestions };
+};
+
+export const getQuestionById = async (questionid: string) => {
+  const [questionData] = await db
+    .select()
+    .from(questionTable)
+    .where(eq(questionTable.id, questionid))
+    .innerJoin(topicTable, eq(topicTable.id, questionTable.topicId))
+    .limit(1)
+    .execute();
+
+  if (!questionData) {
+    throw new Error("Question not found");
+  }
+
+  return questionData;
 };
