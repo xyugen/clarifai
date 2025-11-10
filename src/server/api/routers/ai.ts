@@ -4,7 +4,10 @@ import {
 } from "@/app/(app)/study/[topicId]/question/[questionIndex]/_components/schema";
 import { customModel } from "@/lib/ai";
 import { loadFileChunks } from "@/lib/ai/groq";
-import { generateQuestionPrompt } from "@/lib/ai/prompts";
+import {
+  generateFeedbackPrompt,
+  generateQuestionPrompt,
+} from "@/lib/ai/prompts";
 import {
   answerFeedbackSchema,
   lessonQuestionSchema,
@@ -118,7 +121,7 @@ const aiRouter = createTRPCRouter({
         prompt: [
           {
             role: "system",
-            content: `You are an expert tutor providing constructive feedback on student answers. Review the student's answer in relation to the question and the reference answer provided. Offer specific suggestions for improvement, highlight strengths, and encourage further learning.`,
+            content: generateFeedbackPrompt,
           },
           {
             role: "user",

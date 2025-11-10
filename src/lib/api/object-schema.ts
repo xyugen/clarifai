@@ -19,9 +19,9 @@ export const answerFeedbackSchema = z.object({
   clarityScore: z
     .number()
     .min(1)
-    .max(10)
+    .max(100)
     .describe(
-      "A numerical score from 1 to 10 assessing the clarity and coherence of the student's answer.",
+      "A numerical score from 1 to 100 (percentage) assessing the clarity and coherence of the student's answer.",
     ),
   summary: z
     .string()
