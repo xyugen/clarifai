@@ -26,7 +26,7 @@ const QuestionCard: React.FC<QuestionCardProps> = async ({
   });
 
   return (
-    <Card className="group cursor-pointer bg-white p-6 transition-all hover:-translate-y-1">
+    <Card className="group w-full cursor-pointer bg-white p-6 transition-all hover:-translate-y-1">
       <div className="flex items-start gap-4">
         <div
           className={cn(
