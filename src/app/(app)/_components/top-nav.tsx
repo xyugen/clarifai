@@ -7,7 +7,7 @@ import Title from "@/components/title";
 import { PageRoutes } from "@/constants/page-routes";
 import { authClient } from "@/server/better-auth/client";
 import type { User } from "better-auth";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { toast } from "sonner";
 
 const TopNav = ({ user }: { user: User | null }) => {

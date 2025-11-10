@@ -5,6 +5,7 @@ import { Archivo_Black, Space_Grotesk } from "next/font/google";
 
 import { Toaster } from "@/components/retroui/Sonner";
 import { TRPCReactProvider } from "@/trpc/react";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: "ClarifAI",
@@ -32,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${archivoBlack.variable} ${space.variable}`}>
+        <NextTopLoader color="#ffdb33" />
         <TRPCReactProvider>{children}</TRPCReactProvider>
         <Toaster />
       </body>

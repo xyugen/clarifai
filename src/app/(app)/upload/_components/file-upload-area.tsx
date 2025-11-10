@@ -10,7 +10,7 @@ import { api } from "@/trpc/react";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import type { TRPCError } from "@trpc/server";
 import { ArrowRight, CheckCircle2, FileText, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useState } from "react";
 import { toast } from "sonner";
 import LoadingScreen from "./loading-screen";

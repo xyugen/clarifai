@@ -9,12 +9,13 @@ import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, Sparkles } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
 import { formSchema, MAX_ANSWER_LENGTH } from "./schema";
+import { useRouter } from "nextjs-toploader/app";
 
 interface QuestionFormProps {
   questionId: string;

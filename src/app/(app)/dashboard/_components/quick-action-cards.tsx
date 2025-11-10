@@ -2,8 +2,8 @@
 
 import { PageRoutes } from "@/constants/page-routes";
 import { BookOpen, Brain, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import QuickActionCard from "./quick-action-card";
+import { useRouter } from "nextjs-toploader/app";
 
 const QuickActionCards = () => {
   const router = useRouter();
