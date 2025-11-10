@@ -4,7 +4,7 @@ import {
   topic as topicTable,
   user,
 } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 
 export const saveLesson = async ({
   title,
@@ -57,8 +57,10 @@ export const getLesson = async (lessonId: string) => {
     .select({
       id: topicTable.id,
       title: topicTable.title,
+      authorId: topicTable.author,
       author: user.name,
       summary: topicTable.summary,
+      visibility: topicTable.visibility,
       createdAt: topicTable.createdAt,
     })
     .from(topicTable)
@@ -81,4 +83,54 @@ export const getLesson = async (lessonId: string) => {
     topic,
     questions,
   };
+};
+
+export const getQuestionByIndex = async (
+  topicId: string,
+  questionIndex: number,
+) => {
+  // Verify the topic exists
+  const [topic] = await db
+    .select({
+      id: topicTable.id,
+      authorId: topicTable.author,
+      visibility: topicTable.visibility,
+    })
+    .from(topicTable)
+    .where(eq(topicTable.id, topicId))
+    .limit(1)
+    .execute();
+
+  if (!topic) {
+    throw new Error("Lesson not found");
+  }
+
+  // Get total number of questions
+  const totalResult = await db
+    .select({ totalQuestions: count(questionTable.id) })
+    .from(questionTable)
+    .where(eq(questionTable.topicId, topicId))
+    .execute();
+
+  const totalQuestions: number = Number(totalResult?.[0]?.totalQuestions ?? 0);
+
+  // Validate requested index
+  if (questionIndex < 1 || questionIndex > totalQuestions) {
+    throw new Error("Question not found");
+  }
+
+  // Get only the Nth question using offset
+  const [question] = await db
+    .select()
+    .from(questionTable)
+    .where(eq(questionTable.topicId, topicId))
+    .limit(1)
+    .offset(questionIndex - 1)
+    .execute();
+
+  if (!question) {
+    throw new Error("Question not found");
+  }
+
+  return { topic, question, totalQuestions };
 };

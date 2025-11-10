@@ -1,15 +1,22 @@
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
+import { PageRoutes } from "@/constants/page-routes";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 interface QuestionCardProps {
   index: number;
+  topicId: string;
   question: string;
 }
 
-const QuestionCard: React.FC<QuestionCardProps> = ({ index, question }) => {
+const QuestionCard: React.FC<QuestionCardProps> = ({
+  index,
+  topicId,
+  question,
+}) => {
   return (
     <Card className="group cursor-pointer bg-white p-6 transition-all hover:-translate-y-1">
       <div className="flex items-start gap-4">
@@ -21,13 +28,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ index, question }) => {
             {question}
           </Text>
           <div className="mt-4 flex items-center gap-2">
-            <Button className="bg-primary hover:bg-primary flex items-center gap-2 border-black px-4 py-2 font-sans font-bold transition-all hover:translate-x-0.5 hover:translate-y-0.5">
-              ANSWER NOW
-              <ArrowRight
-                className="size-4 transition-transform group-hover:translate-x-1"
-                strokeWidth={3}
-              />
-            </Button>
+            <Link
+              href={`${PageRoutes.STUDY}/${topicId}/${PageRoutes.QUESTION}/${index}`}
+            >
+              <Button className="bg-primary hover:bg-primary flex items-center gap-2 border-black px-4 py-2 font-sans font-bold transition-all hover:translate-x-0.5 hover:translate-y-0.5">
+                ANSWER NOW
+                <ArrowRight
+                  className="size-4 transition-transform group-hover:translate-x-1"
+                  strokeWidth={3}
+                />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

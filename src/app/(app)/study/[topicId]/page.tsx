@@ -29,6 +29,7 @@ const Page = async ({ params }: { params: { topicId: string } }) => {
               <QuestionCard
                 key={question.id}
                 index={index + 1}
+                topicId={topicId}
                 question={question.text}
               />
             ))}

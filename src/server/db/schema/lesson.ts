@@ -1,5 +1,5 @@
 import { TOPIC_VISIBILITY } from "@/constants/lesson";
-import { sql } from "drizzle-orm";
+import { sql, type InferSelectModel } from "drizzle-orm";
 import { integer, text } from "drizzle-orm/sqlite-core";
 import { createTable } from "../table";
 import { user } from "./auth";
@@ -31,3 +31,6 @@ export const question = createTable("question", {
   clarityScore: integer("clarityScore"),
   answeredAt: integer("answeredAt", { mode: "timestamp" }),
 });
+
+export type Topic = InferSelectModel<typeof topic>;
+export type Question = InferSelectModel<typeof question>;
