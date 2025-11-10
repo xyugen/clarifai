@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { HTMLAttributes } from "react";
+import { type HTMLAttributes } from "react";
 import { Text } from "@/components/retroui/Text";
 
 interface ICardProps extends HTMLAttributes<HTMLDivElement> {
@@ -10,7 +10,7 @@ const Card = ({ className, ...props }: ICardProps) => {
   return (
     <div
       className={cn(
-        "inline-block border-2 rounded shadow-md transition-all hover:shadow-none bg-card",
+        "bg-card inline-block rounded border-2 shadow-md transition-all hover:shadow-none",
         className,
       )}
       {...props}

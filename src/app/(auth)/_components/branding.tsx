@@ -5,7 +5,6 @@ import {
   MessageSquareDiff,
   Upload,
 } from "lucide-react";
-import React from "react";
 
 const Branding = () => {
   return (
