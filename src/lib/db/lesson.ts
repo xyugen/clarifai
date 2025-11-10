@@ -11,7 +11,7 @@ import {
   type InsertFeedback,
 } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, countDistinct, desc, eq } from "drizzle-orm";
 
 export const saveLesson = async ({
   title,
@@ -389,7 +389,9 @@ export const getTopicsForUser = async (userId: string, limit: number) => {
         .execute();
 
       const [answeredCountData] = await db
-        .select({ answeredCount: count(answerTable.id) })
+        .select({
+          answeredCount: countDistinct(answerTable.questionId),
+        })
         .from(answerTable)
         .innerJoin(questionTable, eq(answerTable.questionId, questionTable.id))
         .where(
@@ -407,26 +409,19 @@ export const getTopicsForUser = async (userId: string, limit: number) => {
         });
       }
 
-      if (!answeredCountData) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to retrieve answered count",
-        });
-      }
+      // If answeredCountData is missing, fallback to 0
+      const answeredCount = Number(answeredCountData?.answeredCount ?? 0);
+      const totalQuestions = Number(totalQuestionsData.totalQuestions ?? 0);
 
       const progress =
-        totalQuestionsData?.totalQuestions > 0
-          ? Math.round(
-              (answeredCountData?.answeredCount /
-                totalQuestionsData?.totalQuestions) *
-                100,
-            )
+        totalQuestions > 0
+          ? Math.round((answeredCount / totalQuestions) * 100)
           : 0;
 
       return {
         ...session,
-        totalQuestions: totalQuestionsData.totalQuestions,
-        answeredCount: answeredCountData.answeredCount,
+        totalQuestions,
+        answeredCount,
         progress,
       };
     }),
