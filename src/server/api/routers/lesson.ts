@@ -1,4 +1,5 @@
 import {
+  getFeedbackForAnswer,
   getLatestAnswerFromUser,
   getLesson,
   getQuestionByIndex,
@@ -111,5 +112,35 @@ export const lessonRouter = createTRPCRouter({
       const latestAnswer = await getLatestAnswerFromUser(user.id, questionId);
 
       return latestAnswer;
+    }),
+  getFeedbackForAnswer: protectedProcedure
+    .input(
+      z.object({
+        answerId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { answerId } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      if (!user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      const feedbackData = await getFeedbackForAnswer(answerId);
+
+      if (!feedbackData) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Feedback not found",
+        });
+      }
+
+      return feedbackData;
     }),
 });

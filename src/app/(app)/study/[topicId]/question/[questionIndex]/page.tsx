@@ -1,10 +1,9 @@
-import { Card } from "@/components/retroui/Card";
-import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { api } from "@/trpc/server";
-import { Lightbulb } from "lucide-react";
 import { redirect } from "next/navigation";
+import FeedbackCard from "./_components/feedback-card";
 import QuestionCard from "./_components/question-card";
+import TipCard from "./_components/tip-card";
 import TopNav from "./_components/top-nav";
 
 const Page = async ({
@@ -38,6 +37,13 @@ const Page = async ({
       })
     : null;
 
+  const feedbackData =
+    isQuestionAnswered && latestAnswer
+      ? await api.lesson.getFeedbackForAnswer({
+          answerId: latestAnswer.id,
+        })
+      : null;
+
   const { question, totalQuestions } = questionData;
 
   return (
@@ -57,24 +63,15 @@ const Page = async ({
           latestAnswer={latestAnswer}
         />
 
-        {/* Tip Card */}
-        <Card className="border-2 bg-purple-100 p-5">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-black bg-purple-400">
-              <Lightbulb className="h-5 w-5" strokeWidth={3} />
-            </div>
-            <div>
-              <Text as="h4" className="text-sm` mb-1">
-                WRITING TIP
-              </Text>
-              <Text as="p" className="text-sm text-gray-700">
-                Focus on explaining the concept in your own words rather than
-                memorizing definitions. The AI will give you personalized
-                feedback!
-              </Text>
-            </div>
-          </div>
-        </Card>
+        {feedbackData && (
+          <FeedbackCard
+            feedback={feedbackData.feedback}
+            keyPointsMissed={feedbackData.keyPointsMissed}
+            suggestions={feedbackData.suggestions}
+          />
+        )}
+
+        {!feedbackData && <TipCard />}
       </div>
     </div>
   );

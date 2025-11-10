@@ -333,3 +333,37 @@ export const getLatestAnswerFromUser = async (
 
   return answer;
 };
+
+export const getFeedbackForAnswer = async (answerId: string) => {
+  const [feedback] = await db
+    .select()
+    .from(feedbackTable)
+    .where(eq(feedbackTable.answerId, answerId))
+    .limit(1)
+    .execute();
+
+  if (!feedback) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Feedback not found",
+    });
+  }
+
+  const keyPoints = await db
+    .select()
+    .from(keyPointsMissed)
+    .where(eq(keyPointsMissed.feedbackId, feedback.id))
+    .execute();
+
+  const suggestions = await db
+    .select()
+    .from(suggestionsTable)
+    .where(eq(suggestionsTable.feedbackId, feedback.id))
+    .execute();
+
+  return {
+    feedback,
+    keyPointsMissed: keyPoints,
+    suggestions: suggestions,
+  };
+};
