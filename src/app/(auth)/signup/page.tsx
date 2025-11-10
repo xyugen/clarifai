@@ -1,9 +1,14 @@
 import { Text } from "@/components/retroui/Text";
 import { TextLink } from "@/components/retroui/TextLink";
 import { PageRoutes } from "@/constants/page-routes";
+import type { Metadata } from "next";
 import Divider from "../_components/divider";
 import GoogleButton from "../_components/google-button";
 import SignUpForm from "./_components/signup-form";
+
+export const metadata: Metadata = {
+  title: "Sign Up | ClarifAI",
+};
 
 const Page = () => {
   return (

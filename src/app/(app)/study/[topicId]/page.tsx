@@ -1,12 +1,28 @@
 import { api } from "@/trpc/server";
+import type { Metadata } from "next";
 import ActionCard from "./_components/action-card";
 import Header from "./_components/header";
 import QuestionCard from "./_components/question-card";
 import QuestionsHeader from "./_components/questions-header";
 import SummaryCard from "./_components/summary-card";
 
-const Page = async ({ params }: { params: { topicId: string } }) => {
-  const { topicId } = params;
+type Props = {
+  params: Promise<{ topicId: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // read route params
+  const { topicId } = await params;
+
+  const { topic } = await api.lesson.getLesson({ topicId: topicId });
+
+  return {
+    title: topic.title,
+  };
+}
+
+const Page = async ({ params }: Props) => {
+  const { topicId } = await params;
   const { topic, questions } = await api.lesson.getLesson({ topicId: topicId });
 
   return (

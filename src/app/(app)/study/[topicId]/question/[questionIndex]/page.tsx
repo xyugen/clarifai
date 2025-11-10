@@ -1,17 +1,32 @@
 import { PageRoutes } from "@/constants/page-routes";
 import { api } from "@/trpc/server";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import FeedbackCard from "./_components/feedback-card";
 import QuestionCard from "./_components/question-card";
 import TipCard from "./_components/tip-card";
 import TopNav from "./_components/top-nav";
 
-const Page = async ({
-  params,
-}: {
-  params: { topicId: string; questionIndex: string };
-}) => {
-  const { topicId, questionIndex } = params;
+type Props = {
+  params: Promise<{ topicId: string; questionIndex: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { topicId, questionIndex } = await params;
+  const questionIndexInt = parseInt(questionIndex, 10);
+
+  const questionData = await api.lesson.getQuestionByIndex({
+    topicId,
+    questionIndex: questionIndexInt,
+  });
+
+  return {
+    title: questionData.question.text,
+  };
+}
+
+const Page = async ({ params }: Props) => {
+  const { topicId, questionIndex } = await params;
   const questionIndexInt = parseInt(questionIndex, 10);
 
   if (Number.isNaN(questionIndexInt) || questionIndexInt < 0) {
