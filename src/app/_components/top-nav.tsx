@@ -15,7 +15,7 @@ const TopNav = async () => {
     <nav className="border-b-2 border-black bg-white p-4">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Title />
-        <div className="items-center gap-6">
+        <div className="flex items-center gap-6">
           {session ? (
             <Link href={PageRoutes.DASHBOARD}>
               <Button variant="default" className="text-sm">
