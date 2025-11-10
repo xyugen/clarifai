@@ -1,5 +1,5 @@
 import { TOPIC_VISIBILITY } from "@/constants/lesson";
-import { sql, type InferSelectModel } from "drizzle-orm";
+import { sql, type InferInsertModel, type InferSelectModel } from "drizzle-orm";
 import { integer, text } from "drizzle-orm/sqlite-core";
 import { createTable } from "../table";
 import { user } from "./auth";
@@ -48,8 +48,6 @@ export const feedback = createTable("feedback", {
   clarityScore: integer("clarityScore").notNull(),
   summary: text("summary").notNull(),
   feedback: text("feedback").notNull(),
-  keyPointsMissed: text("keyPointsMissed"),
-  suggestions: text("suggestions"),
   encouragement: text("encouragement"),
   createdAt: integer("createdAt", { mode: "timestamp" })
     .notNull()
@@ -74,3 +72,10 @@ export const suggestions = createTable("suggestions", {
 
 export type Topic = InferSelectModel<typeof topic>;
 export type Question = InferSelectModel<typeof question>;
+export type Answer = InferSelectModel<typeof answer>;
+export type Feedback = InferSelectModel<typeof feedback>;
+export type KeyPointMissed = InferSelectModel<typeof keyPointsMissed>;
+export type Suggestion = InferSelectModel<typeof suggestions>;
+
+export type InsertAnswer = InferInsertModel<typeof answer>;
+export type InsertFeedback = InferInsertModel<typeof feedback>;

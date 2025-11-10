@@ -9,7 +9,12 @@ import {
   answerFeedbackSchema,
   lessonQuestionSchema,
 } from "@/lib/api/object-schema";
-import { getQuestionById, saveLesson } from "@/lib/db";
+import {
+  getQuestionById,
+  saveAnswer,
+  saveFeedback,
+  saveLesson,
+} from "@/lib/db";
 import { estimateTokens } from "@/lib/utils";
 import { TRPCError } from "@trpc/server";
 import { generateObject } from "ai";
@@ -127,7 +132,33 @@ const aiRouter = createTRPCRouter({
         });
       }
 
-      return { feedback: data.object };
+      const answerId = await saveAnswer({
+        id: crypto.randomUUID(),
+        questionId: question.id,
+        userAnswer,
+      });
+
+      if (!answerId) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to save answer",
+        });
+      }
+
+      const feedbackId = await saveFeedback(
+        {
+          id: crypto.randomUUID(),
+          answerId,
+          clarityScore: data.object.clarityScore,
+          summary: data.object.summary,
+          feedback: data.object.feedback,
+          encouragement: data.object.encouragement,
+        },
+        data.object.keyPointsMissed,
+        data.object.suggestions,
+      );
+
+      return { feedbackId };
     }),
 });
 

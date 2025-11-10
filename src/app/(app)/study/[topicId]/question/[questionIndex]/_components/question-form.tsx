@@ -48,7 +48,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       },
       {
         onSuccess: (data) => {
-          console.log(data);
           // const basePath = pathname.substring(0, pathname.lastIndexOf("/")); // removes the last "/2"
           // const nextIndex = currentQuestionIndex + 1;
           // router.push(`${basePath}/${nextIndex}`);

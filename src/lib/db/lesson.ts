@@ -1,10 +1,17 @@
 import { db } from "@/server/db";
 import {
+  answer as answerTable,
+  feedback as feedbackTable,
+  keyPointsMissed,
   question as questionTable,
+  suggestions as suggestionsTable,
   topic as topicTable,
   user,
+  type InsertAnswer,
+  type InsertFeedback,
 } from "@/server/db/schema";
 import { count, eq } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export const saveLesson = async ({
   title,
@@ -29,7 +36,10 @@ export const saveLesson = async ({
     .execute();
 
   if (!topic) {
-    throw new Error("Failed to create topic");
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to create topic",
+    });
   }
 
   const [questionId] = await db
@@ -46,7 +56,10 @@ export const saveLesson = async ({
     .execute();
 
   if (!questionId) {
-    throw new Error("Failed to create questions");
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to create questions",
+    });
   }
 
   return topic.id;
@@ -70,7 +83,10 @@ export const getLesson = async (lessonId: string) => {
     .execute();
 
   if (!topic) {
-    throw new Error("Lesson not found");
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Lesson not found",
+    });
   }
 
   const questions = await db
@@ -102,7 +118,10 @@ export const getQuestionByIndex = async (
     .execute();
 
   if (!topic) {
-    throw new Error("Lesson not found");
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Lesson not found",
+    });
   }
 
   // Get total number of questions
@@ -116,7 +135,10 @@ export const getQuestionByIndex = async (
 
   // Validate requested index
   if (questionIndex < 1 || questionIndex > totalQuestions) {
-    throw new Error("Question not found");
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Question not found",
+    });
   }
 
   // Get only the Nth question using offset
@@ -129,7 +151,10 @@ export const getQuestionByIndex = async (
     .execute();
 
   if (!question) {
-    throw new Error("Question not found");
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Question not found",
+    });
   }
 
   return { topic, question, totalQuestions };
@@ -145,8 +170,110 @@ export const getQuestionById = async (questionid: string) => {
     .execute();
 
   if (!questionData) {
-    throw new Error("Question not found");
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Question not found",
+    });
   }
 
   return questionData;
+};
+
+export const saveAnswer = async (answerData: InsertAnswer) => {
+  const [question] = await db
+    .select()
+    .from(questionTable)
+    .where(eq(questionTable.id, answerData.questionId))
+    .limit(1)
+    .execute();
+
+  if (!question) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Question not found",
+    });
+  }
+
+  const [answer] = await db
+    .insert(answerTable)
+    .values({
+      id: answerData.id,
+      questionId: answerData.questionId,
+      userAnswer: answerData.userAnswer,
+    })
+    .returning({ id: answerTable.id })
+    .execute();
+
+  if (!answer) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to create answer",
+    });
+  }
+
+  return answer.id;
+};
+
+export const saveFeedback = async (
+  feedbackData: InsertFeedback,
+  keyPointsMissedData?: string[],
+  suggestionsData?: string[],
+) => {
+  const [answer] = await db
+    .select()
+    .from(answerTable)
+    .where(eq(answerTable.id, feedbackData.answerId))
+    .limit(1)
+    .execute();
+
+  if (!answer) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Answer not found",
+    });
+  }
+
+  const [feedback] = await db
+    .insert(feedbackTable)
+    .values({
+      id: crypto.randomUUID(),
+      answerId: feedbackData.answerId,
+      clarityScore: feedbackData.clarityScore,
+      summary: feedbackData.summary,
+      feedback: feedbackData.feedback,
+      encouragement: feedbackData.encouragement,
+    })
+    .returning({ id: feedbackTable.id })
+    .execute();
+
+  if (!feedback) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to create feedback",
+    });
+  }
+
+  await db
+    .insert(keyPointsMissed)
+    .values(
+      keyPointsMissedData?.map((point) => ({
+        id: crypto.randomUUID(),
+        feedbackId: feedback.id,
+        point,
+      })) ?? [],
+    )
+    .execute();
+
+  await db
+    .insert(suggestionsTable)
+    .values(
+      suggestionsData?.map((suggestion) => ({
+        id: crypto.randomUUID(),
+        feedbackId: feedback.id,
+        suggestion,
+      })) ?? [],
+    )
+    .execute();
+
+  return feedback.id;
 };

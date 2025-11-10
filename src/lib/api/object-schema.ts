@@ -16,6 +16,13 @@ export const lessonQuestionSchema = z.object({
 });
 
 export const answerFeedbackSchema = z.object({
+  clarityScore: z
+    .number()
+    .min(1)
+    .max(10)
+    .describe(
+      "A numerical score from 1 to 10 assessing the clarity and coherence of the student's answer.",
+    ),
   summary: z
     .string()
     .describe(
