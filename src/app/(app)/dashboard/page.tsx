@@ -1,11 +1,11 @@
 import { Button } from "@/components/retroui/Button";
 import { auth } from "@/server/better-auth";
-import { ArrowRight, BookOpen, Clock, Target, Zap } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { headers } from "next/headers";
 import HeroSection from "./_components/hero-section";
 import QuickActionCards from "./_components/quick-action-cards";
 import SessionsTable from "./_components/sessions-table";
-import StatsCard from "./_components/stats-card";
+import StatsSection from "./_components/stats-section";
 
 const Page = async () => {
   const session = await auth.api.getSession({
@@ -14,35 +14,14 @@ const Page = async () => {
 
   const userName = session?.user.name ?? "User";
 
-  const stats = [
-    { label: "SESSIONS", value: "24", icon: BookOpen, color: "bg-pink-300" },
-    { label: "HOURS LEARNED", value: "48", icon: Clock, color: "bg-blue-300" },
-    { label: "STREAK", value: "7 days", icon: Zap, color: "bg-yellow-200" },
-    { label: "ACCURACY", value: "89%", icon: Target, color: "bg-green-300" },
-  ];
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="mb-8">
+      <section className="mb-8">
         <HeroSection userName={userName} />
         <QuickActionCards />
-      </div>
+      </section>
 
-      {/* Stats Section */}
-      <div className="mb-8">
-        <h2 className="mb-4 text-3xl font-black">YOUR STATS</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {stats.map((stat, i) => (
-            <StatsCard
-              key={i}
-              label={stat.label}
-              value={stat.value}
-              icon={stat.icon}
-              color={stat.color}
-            />
-          ))}
-        </div>
-      </div>
+      <StatsSection />
 
       {/* Recent Study Sessions */}
       <div className="mb-4 flex items-center justify-between">

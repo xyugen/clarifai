@@ -4,6 +4,7 @@ import {
   getLesson,
   getQuestionByIndex,
   getTopicsForUser,
+  getUserStats,
   isQuestionAnsweredByUser,
 } from "@/lib/db";
 import { TRPCError } from "@trpc/server";
@@ -173,4 +174,20 @@ export const lessonRouter = createTRPCRouter({
 
       return topics;
     }),
+  getUserStats: protectedProcedure.query(async ({ ctx }) => {
+    const {
+      session: { user },
+    } = ctx;
+
+    if (!user.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "User not authenticated",
+      });
+    }
+
+    const stats = await getUserStats(user.id);
+
+    return stats;
+  }),
 });

@@ -11,7 +11,7 @@ import {
   type InsertFeedback,
 } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { and, count, countDistinct, desc, eq } from "drizzle-orm";
+import { and, avg, count, countDistinct, desc, eq } from "drizzle-orm";
 
 export const saveLesson = async ({
   title,
@@ -428,4 +428,78 @@ export const getTopicsForUser = async (userId: string, limit: number) => {
   );
 
   return progressData;
+};
+
+export const getUserStats = async (userId: string) => {
+  const [sessionsData] = await db
+    .select({ sessions: countDistinct(topicTable.id) })
+    .from(topicTable)
+    .where(eq(topicTable.author, userId))
+    .execute();
+
+  const [answeredCountData] = await db
+    .select({
+      answeredCount: countDistinct(answerTable.questionId),
+    })
+    .from(answerTable)
+    .where(eq(answerTable.authorId, userId))
+    .execute();
+
+  const answerDates = await db
+    .select({
+      date: answerTable.createdAt,
+    })
+    .from(answerTable)
+    .where(eq(answerTable.authorId, userId))
+    .groupBy(answerTable.createdAt)
+    .orderBy(desc(answerTable.createdAt))
+    .execute();
+
+  let streak = 0;
+  if (answerDates.length > 0) {
+    const today = new Date();
+    let prevDate = new Date(today.toDateString());
+
+    for (const row of answerDates) {
+      const currentDate = new Date(row.date);
+      const diffDays =
+        (prevDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      if (diffDays === 0) {
+        continue;
+      } else if (diffDays === 1) {
+        streak++;
+        prevDate = currentDate;
+      } else {
+        break;
+      }
+    }
+
+    if (answerDates[0]?.date) {
+      const firstDate = new Date(answerDates[0]?.date);
+      if (firstDate.toDateString() === today.toDateString()) {
+        streak++;
+      }
+    }
+  }
+
+  const [clarityData] = await db
+    .select({
+      avgClarity: avg(feedbackTable.clarityScore),
+    })
+    .from(feedbackTable)
+    .innerJoin(answerTable, eq(feedbackTable.answerId, answerTable.id))
+    .where(eq(answerTable.authorId, userId))
+    .execute();
+
+  const clarity = clarityData?.avgClarity
+    ? Math.round(Number(clarityData.avgClarity))
+    : 0;
+
+  return {
+    sessions: Number(sessionsData?.sessions ?? 0),
+    answeredCount: Number(answeredCountData?.answeredCount ?? 0),
+    streak,
+    clarity,
+  };
 };
