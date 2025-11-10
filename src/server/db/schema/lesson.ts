@@ -34,6 +34,9 @@ export const answer = createTable("answer", {
   questionId: text("questionId")
     .notNull()
     .references(() => question.id, { onDelete: "cascade" }),
+  authorId: text("authorId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   userAnswer: text("userAnswer").notNull(),
   createdAt: integer("createdAt", { mode: "timestamp" })
     .notNull()
