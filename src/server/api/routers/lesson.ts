@@ -3,6 +3,7 @@ import {
   getLatestAnswerFromUser,
   getLesson,
   getQuestionByIndex,
+  getTopicsForUser,
   isQuestionAnsweredByUser,
 } from "@/lib/db";
 import { TRPCError } from "@trpc/server";
@@ -142,5 +143,34 @@ export const lessonRouter = createTRPCRouter({
       }
 
       return feedbackData;
+    }),
+  getTopicsForUser: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().default(6),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const {
+        session: { user },
+      } = ctx;
+
+      if (!user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      const topics = await getTopicsForUser(user.id, input.limit);
+
+      if (!topics) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Topics not found",
+        });
+      }
+
+      return topics;
     }),
 });

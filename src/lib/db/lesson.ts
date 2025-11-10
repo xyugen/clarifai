@@ -10,8 +10,8 @@ import {
   type InsertAnswer,
   type InsertFeedback,
 } from "@/server/db/schema";
-import { and, count, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { and, count, desc, eq } from "drizzle-orm";
 
 export const saveLesson = async ({
   title,
@@ -366,4 +366,71 @@ export const getFeedbackForAnswer = async (answerId: string) => {
     keyPointsMissed: keyPoints,
     suggestions: suggestions,
   };
+};
+
+export const getTopicsForUser = async (userId: string, limit: number) => {
+  const sessions = await db
+    .select({
+      id: topicTable.id,
+      title: topicTable.title,
+      lastActivity: topicTable.createdAt,
+    })
+    .from(topicTable)
+    .where(eq(topicTable.author, userId))
+    .limit(limit)
+    .execute();
+
+  const progressData = await Promise.all(
+    sessions.map(async (session) => {
+      const [totalQuestionsData] = await db
+        .select({ totalQuestions: count(questionTable.id) })
+        .from(questionTable)
+        .where(eq(questionTable.topicId, session.id))
+        .execute();
+
+      const [answeredCountData] = await db
+        .select({ answeredCount: count(answerTable.id) })
+        .from(answerTable)
+        .innerJoin(questionTable, eq(answerTable.questionId, questionTable.id))
+        .where(
+          and(
+            eq(questionTable.topicId, session.id),
+            eq(answerTable.authorId, userId),
+          ),
+        )
+        .execute();
+
+      if (!totalQuestionsData) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to retrieve total questions",
+        });
+      }
+
+      if (!answeredCountData) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to retrieve answered count",
+        });
+      }
+
+      const progress =
+        totalQuestionsData?.totalQuestions > 0
+          ? Math.round(
+              (answeredCountData?.answeredCount /
+                totalQuestionsData?.totalQuestions) *
+                100,
+            )
+          : 0;
+
+      return {
+        ...session,
+        totalQuestions: totalQuestionsData.totalQuestions,
+        answeredCount: answeredCountData.answeredCount,
+        progress,
+      };
+    }),
+  );
+
+  return progressData;
 };
