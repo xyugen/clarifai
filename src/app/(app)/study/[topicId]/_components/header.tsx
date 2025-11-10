@@ -1,9 +1,12 @@
+import DeleteTopicButton from "@/components/delete-topic-button";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
+import { PageRoutes } from "@/constants/page-routes";
 import { BookOpen, Clock, MessageSquare, User } from "lucide-react";
 import React from "react";
 
 interface HeaderProps {
+  topicId: string;
   title: string;
   author: string | null;
   createdAt: Date;
@@ -11,6 +14,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({
+  topicId,
   title,
   author,
   createdAt,
@@ -24,9 +28,18 @@ const Header: React.FC<HeaderProps> = ({
             <BookOpen className="size-8" />
           </Card>
           <div className="flex-1">
-            <Card className="border-foreground mb-3 inline-block -rotate-1 border-2 bg-pink-400 px-3 py-1 shadow hover:shadow">
-              <span className="text-xs font-bold">LESSON OVERVIEW</span>
-            </Card>
+            <div className="flex items-center justify-between">
+              <Card className="border-foreground mb-3 inline-block -rotate-1 border-2 bg-pink-400 px-3 py-1 shadow hover:shadow">
+                <span className="text-xs font-bold">LESSON OVERVIEW</span>
+              </Card>
+
+              <DeleteTopicButton
+                topicId={topicId}
+                redirectUrl={PageRoutes.STUDY}
+                className="h-10"
+                showLabel
+              />
+            </div>
             <Text
               as="h1"
               className="mb-3 text-3xl leading-tight font-black md:text-5xl"

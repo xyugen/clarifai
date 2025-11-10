@@ -3,6 +3,7 @@
 import { Button } from "@/components/retroui/Button";
 import { Dialog } from "@/components/retroui/Dialog";
 import { Text } from "@/components/retroui/Text";
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { Trash } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
@@ -11,9 +12,17 @@ import { toast } from "sonner";
 
 interface DeleteTopicButtonProps {
   topicId: string;
+  redirectUrl?: string;
+  showLabel?: boolean;
+  className?: string;
 }
 
-const DeleteTopicButton: React.FC<DeleteTopicButtonProps> = ({ topicId }) => {
+const DeleteTopicButton: React.FC<DeleteTopicButtonProps> = ({
+  topicId,
+  redirectUrl,
+  showLabel = false,
+  className,
+}) => {
   const router = useRouter();
 
   const deleteTopicMutation = api.lesson.deleteTopic.useMutation();
@@ -34,7 +43,11 @@ const DeleteTopicButton: React.FC<DeleteTopicButtonProps> = ({ topicId }) => {
       toast.error("Error deleting topic");
     }
     await refetch();
-    router.refresh();
+    if (redirectUrl) {
+      router.push(redirectUrl);
+    } else {
+      router.refresh();
+    }
   };
 
   return (
@@ -42,10 +55,14 @@ const DeleteTopicButton: React.FC<DeleteTopicButtonProps> = ({ topicId }) => {
       <Dialog.Trigger asChild>
         <Button
           variant={"default"}
-          className="h-8 bg-red-300 hover:bg-red-400 focus:ring-red-200"
+          className={cn(
+            "flex h-8 shrink-0 items-center justify-center gap-2 bg-red-300 hover:bg-red-400 focus:ring-red-200",
+            className,
+          )}
           size="sm"
         >
           <Trash className="size-4" />
+          {showLabel && <span>Delete</span>}
         </Button>
       </Dialog.Trigger>
       <Dialog.Content>

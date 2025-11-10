@@ -12,6 +12,7 @@ const Page = async ({ params }: { params: { topicId: string } }) => {
   return (
     <div className="min-h-screen bg-cyan-100">
       <Header
+        topicId={topicId}
         title={topic.title}
         author={topic.author}
         createdAt={topic.createdAt}

@@ -1,14 +1,13 @@
+import DeleteTopicButton from "@/components/delete-topic-button";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { Progress } from "@/components/retroui/Progress";
 import { Table } from "@/components/retroui/Table";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
-import { api } from "@/trpc/server";
 import { formatDistance } from "date-fns";
 import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
-import DeleteTopicButton from "./delete-topic-button";
 import type React from "react";
 
 interface SessionsTableProps {
