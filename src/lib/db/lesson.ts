@@ -368,8 +368,72 @@ export const getFeedbackForAnswer = async (answerId: string) => {
   };
 };
 
-export const getTopicsForUser = async (userId: string, limit: number) => {
-  const sessions = await db
+export const getTopicsForUser = async (userId: string) => {
+  const topics = await db
+    .select({
+      id: topicTable.id,
+      title: topicTable.title,
+      lastActivity: topicTable.createdAt,
+    })
+    .from(topicTable)
+    .where(eq(topicTable.authorId, userId))
+    .execute();
+
+  const progressData = await Promise.all(
+    topics.map(async (session) => {
+      const [totalQuestionsData] = await db
+        .select({ totalQuestions: count(questionTable.id) })
+        .from(questionTable)
+        .where(eq(questionTable.topicId, session.id))
+        .execute();
+
+      const [answeredCountData] = await db
+        .select({
+          answeredCount: countDistinct(answerTable.questionId),
+        })
+        .from(answerTable)
+        .innerJoin(questionTable, eq(answerTable.questionId, questionTable.id))
+        .where(
+          and(
+            eq(questionTable.topicId, session.id),
+            eq(answerTable.authorId, userId),
+          ),
+        )
+        .execute();
+
+      if (!totalQuestionsData) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to retrieve total questions",
+        });
+      }
+
+      // If answeredCountData is missing, fallback to 0
+      const answeredCount = Number(answeredCountData?.answeredCount ?? 0);
+      const totalQuestions = Number(totalQuestionsData.totalQuestions ?? 0);
+
+      const progress =
+        totalQuestions > 0
+          ? Math.round((answeredCount / totalQuestions) * 100)
+          : 0;
+
+      return {
+        ...session,
+        totalQuestions,
+        answeredCount,
+        progress,
+      };
+    }),
+  );
+
+  return progressData;
+};
+
+export const getTopicsForUserWithLimit = async (
+  userId: string,
+  limit: number,
+) => {
+  const topics = await db
     .select({
       id: topicTable.id,
       title: topicTable.title,
@@ -381,7 +445,7 @@ export const getTopicsForUser = async (userId: string, limit: number) => {
     .execute();
 
   const progressData = await Promise.all(
-    sessions.map(async (session) => {
+    topics.map(async (session) => {
       const [totalQuestionsData] = await db
         .select({ totalQuestions: count(questionTable.id) })
         .from(questionTable)

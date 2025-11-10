@@ -5,6 +5,7 @@ import {
   getLesson,
   getQuestionByIndex,
   getTopicsForUser,
+  getTopicsForUserWithLimit,
   getUserStats,
   isQuestionAnsweredByUser,
 } from "@/lib/db";
@@ -146,7 +147,30 @@ export const lessonRouter = createTRPCRouter({
 
       return feedbackData;
     }),
-  getTopicsForUser: protectedProcedure
+  getTopicsForUser: protectedProcedure.query(async ({ ctx }) => {
+    const {
+      session: { user },
+    } = ctx;
+
+    if (!user.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "User not authenticated",
+      });
+    }
+
+    const topics = await getTopicsForUser(user.id);
+
+    if (!topics) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Topics not found",
+      });
+    }
+
+    return topics;
+  }),
+  getTopicsForUserWithLimit: protectedProcedure
     .input(
       z.object({
         limit: z.number().default(6),
@@ -164,7 +188,7 @@ export const lessonRouter = createTRPCRouter({
         });
       }
 
-      const topics = await getTopicsForUser(user.id, input.limit);
+      const topics = await getTopicsForUserWithLimit(user.id, input.limit);
 
       if (!topics) {
         throw new TRPCError({

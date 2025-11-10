@@ -18,7 +18,7 @@ const DeleteTopicButton: React.FC<DeleteTopicButtonProps> = ({ topicId }) => {
 
   const deleteTopicMutation = api.lesson.deleteTopic.useMutation();
 
-  const { refetch } = api.lesson.getTopicsForUser.useQuery({
+  const { refetch } = api.lesson.getTopicsForUserWithLimit.useQuery({
     limit: 6,
   });
 

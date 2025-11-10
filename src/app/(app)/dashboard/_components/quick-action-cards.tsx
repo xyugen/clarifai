@@ -2,8 +2,8 @@
 
 import { PageRoutes } from "@/constants/page-routes";
 import { BookOpen, Brain, Upload } from "lucide-react";
-import QuickActionCard from "./quick-action-card";
 import { useRouter } from "nextjs-toploader/app";
+import QuickActionCard from "./quick-action-card";
 
 const QuickActionCards = () => {
   const router = useRouter();
@@ -43,7 +43,7 @@ const QuickActionCards = () => {
         bgColor="bg-green-300"
         badgeColor="bg-green-200"
         onClick={() => {
-          console.log("View All clicked");
+          router.push(PageRoutes.STUDY);
         }}
       />
     </div>
