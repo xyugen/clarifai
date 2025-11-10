@@ -9,11 +9,16 @@ import SessionsTable from "./_components/sessions-table";
 import StatsSection from "./_components/stats-section";
 import Link from "next/link";
 import { PageRoutes } from "@/constants/page-routes";
+import { redirect } from "next/navigation";
 
 const Page = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  if (!session) {
+    redirect(PageRoutes.LOGIN);
+  }
 
   const userName = session?.user.name ?? "User";
 
