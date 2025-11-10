@@ -49,22 +49,23 @@ const FileUploadArea = () => {
           router.push(`${PageRoutes.STUDY}/${res.topicId}`);
         })
         .catch((error: TRPCError) => {
+          setLoading(false);
           toast.error(error.message);
         });
       setFile(null);
       setNumberOfQuestions("5");
       setDifficulty("medium");
     } catch (error) {
+      setLoading(false);
       if (error instanceof Error) {
         toast.error("Failed to import PDF");
       }
     }
-    setLoading(false);
   };
 
   return (
     <>
-      {fileUploadMutation.isPending && <LoadingScreen />}
+      {(fileUploadMutation.isPending || loading) && <LoadingScreen />}
 
       {!file ? (
         <FileUpload
