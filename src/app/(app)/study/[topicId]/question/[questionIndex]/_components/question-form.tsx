@@ -2,13 +2,15 @@
 
 import { Button } from "@/components/retroui/Button";
 import { Label } from "@/components/retroui/Label";
+import { Loader } from "@/components/retroui/Loader";
 import { Textarea } from "@/components/retroui/Textarea";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoaderCircle, Send, Sparkles } from "lucide-react";
+import { Send, Sparkles } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
@@ -30,6 +32,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const router = useRouter();
   const pathname = usePathname();
 
+  const [isAnswered, setIsAnswered] = useState<boolean>(!!latestAnswer);
+
   const generateFeedbackMutation =
     api.ai.generateFeedbackFromAnswer.useMutation();
 
@@ -50,6 +54,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       },
       {
         onSuccess: (data) => {
+          setIsAnswered(true);
           // const basePath = pathname.substring(0, pathname.lastIndexOf("/")); // removes the last "/2"
           // const nextIndex = currentQuestionIndex + 1;
           // router.push(`${basePath}/${nextIndex}`);
@@ -94,7 +99,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                 id="email"
                 aria-invalid={fieldState.invalid}
                 placeholder="Take your time to think through your answer..."
-                className="h-64 w-full resize-none border-2 border-black p-4 text-lg font-medium focus:ring-4 focus:ring-yellow-400 focus:outline-none"
+                className="focus:ring-primary h-64 w-full resize-none border-2 border-black p-4 text-lg font-medium focus:ring-4 focus:outline-none"
                 maxLength={MAX_ANSWER_LENGTH}
                 required
               />
@@ -118,16 +123,18 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           form="form-question"
           variant={"default"}
           disabled={generateFeedbackMutation.isPending}
-          className="flex flex-1 items-center justify-center gap-2"
-        >
-          {generateFeedbackMutation.isPending ? (
-            <LoaderCircle className="stroke-primary size-5 animate-spin" />
-          ) : (
-            <>
-              <Send className="size-5" strokeWidth={3} />
-              {latestAnswer ? "UPDATE ANSWER" : "SUBMIT ANSWER"}
-            </>
+          className={cn(
+            "relative flex flex-1 items-center justify-center gap-2",
+            isAnswered ? "bg-green-300 hover:bg-green-400" : "bg-primary",
           )}
+        >
+          {generateFeedbackMutation.isPending && (
+            <div className="bg-background/5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <Loader />
+            </div>
+          )}
+          <Send className="size-5" strokeWidth={3} />
+          {isAnswered ? "UPDATE ANSWER" : "SUBMIT ANSWER"}
         </Button>
         {!isLastQuestion && (
           <Button
@@ -135,8 +142,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             variant={"outline"}
             disabled={generateFeedbackMutation.isPending}
             onClick={handleSkipQuestion}
+            className="flex items-center justify-center"
           >
-            {latestAnswer ? "NEXT" : "SKIP FOR NOW"}
+            {isAnswered ? "NEXT" : "SKIP FOR NOW"}
           </Button>
         )}
       </FieldGroup>

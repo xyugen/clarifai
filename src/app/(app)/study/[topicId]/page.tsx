@@ -30,13 +30,14 @@ const Page = async ({ params }: { params: { topicId: string } }) => {
                 key={question.id}
                 index={index + 1}
                 topicId={topicId}
+                questionId={question.id}
                 question={question.text}
               />
             ))}
           </div>
         </div>
 
-        <ActionCard />
+        <ActionCard topicId={topicId} />
       </div>
     </div>
   );
