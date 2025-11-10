@@ -18,12 +18,14 @@ interface QuestionFormProps {
   questionId: string;
   currentQuestionIndex: number;
   isLastQuestion?: boolean;
+  latestAnswer?: string | null;
 }
 
 const QuestionForm: React.FC<QuestionFormProps> = ({
   questionId,
   currentQuestionIndex,
   isLastQuestion,
+  latestAnswer,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -34,7 +36,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      answer: "",
+      answer: latestAnswer ?? "",
     },
   });
 
@@ -55,7 +57,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         onError: (error) => {
           console.error("Error generating feedback:", error);
           toast.error(
-            error.message ?? "An error occurred while submitting your answer.",
+            error.data?.code === "BAD_REQUEST"
+              ? error.message
+              : "An error occurred while submitting your answer.",
           );
         },
       },
@@ -121,7 +125,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           ) : (
             <>
               <Send className="size-5" strokeWidth={3} />
-              SUBMIT ANSWER
+              {latestAnswer ? "UPDATE ANSWER" : "SUBMIT ANSWER"}
             </>
           )}
         </Button>
@@ -132,7 +136,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             disabled={generateFeedbackMutation.isPending}
             onClick={handleSkipQuestion}
           >
-            SKIP FOR NOW
+            {latestAnswer ? "NEXT" : "SKIP FOR NOW"}
           </Button>
         )}
       </FieldGroup>

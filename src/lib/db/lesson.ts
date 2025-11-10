@@ -6,11 +6,11 @@ import {
   question as questionTable,
   suggestions as suggestionsTable,
   topic as topicTable,
-  user,
+  user as userTable,
   type InsertAnswer,
   type InsertFeedback,
 } from "@/server/db/schema";
-import { count, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const saveLesson = async ({
@@ -71,13 +71,13 @@ export const getLesson = async (lessonId: string) => {
       id: topicTable.id,
       title: topicTable.title,
       authorId: topicTable.author,
-      author: user.name,
+      author: userTable.name,
       summary: topicTable.summary,
       visibility: topicTable.visibility,
       createdAt: topicTable.createdAt,
     })
     .from(topicTable)
-    .leftJoin(user, eq(user.id, topicTable.author))
+    .leftJoin(userTable, eq(userTable.id, topicTable.author))
     .where(eq(topicTable.id, lessonId))
     .limit(1)
     .execute();
@@ -199,6 +199,7 @@ export const saveAnswer = async (answerData: InsertAnswer) => {
     .values({
       id: answerData.id,
       questionId: answerData.questionId,
+      authorId: answerData.authorId,
       userAnswer: answerData.userAnswer,
     })
     .returning({ id: answerTable.id })
@@ -276,4 +277,59 @@ export const saveFeedback = async (
     .execute();
 
   return feedback.id;
+};
+
+export const isQuestionAnsweredByUser = async (
+  userId: string,
+  questionId: string,
+) => {
+  const [answer] = await db
+    .select()
+    .from(answerTable)
+    .where(
+      and(
+        eq(answerTable.questionId, questionId),
+        eq(answerTable.authorId, userId),
+      ),
+    )
+    .limit(1)
+    .execute();
+
+  return Boolean(answer);
+};
+
+export const getLatestAnswerFromUser = async (
+  userId: string,
+  questionId: string,
+) => {
+  const question = await getQuestionById(questionId);
+
+  if (!question) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Question not found",
+    });
+  }
+
+  const [answer] = await db
+    .select()
+    .from(answerTable)
+    .where(
+      and(
+        eq(answerTable.authorId, userId),
+        eq(answerTable.questionId, questionId),
+      ),
+    )
+    .orderBy(desc(answerTable.createdAt))
+    .limit(1)
+    .execute();
+
+  if (!answer) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Answer not found",
+    });
+  }
+
+  return answer;
 };

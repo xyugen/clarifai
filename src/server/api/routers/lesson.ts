@@ -1,4 +1,9 @@
-import { getLesson, getQuestionByIndex } from "@/lib/db";
+import {
+  getLatestAnswerFromUser,
+  getLesson,
+  getQuestionByIndex,
+  isQuestionAnsweredByUser,
+} from "@/lib/db";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -60,5 +65,51 @@ export const lessonRouter = createTRPCRouter({
       }
 
       return { question, totalQuestions };
+    }),
+  isQuestionAnswered: protectedProcedure
+    .input(
+      z.object({
+        questionId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { questionId } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      if (!user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      const isAnswered = await isQuestionAnsweredByUser(user.id, questionId);
+
+      return isAnswered;
+    }),
+  getLatestAnswerFromUser: protectedProcedure
+    .input(
+      z.object({
+        questionId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { questionId } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      if (!user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      const latestAnswer = await getLatestAnswerFromUser(user.id, questionId);
+
+      return latestAnswer;
     }),
 });

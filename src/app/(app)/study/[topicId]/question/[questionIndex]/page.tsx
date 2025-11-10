@@ -28,6 +28,16 @@ const Page = async ({
     redirect(`${PageRoutes.STUDY}/${topicId}`);
   }
 
+  const isQuestionAnswered = await api.lesson.isQuestionAnswered({
+    questionId: questionData.question.id,
+  });
+
+  const latestAnswer = isQuestionAnswered
+    ? await api.lesson.getLatestAnswerFromUser({
+        questionId: questionData.question.id,
+      })
+    : null;
+
   const { question, totalQuestions } = questionData;
 
   return (
@@ -44,6 +54,7 @@ const Page = async ({
           currentQuestionIndex={questionIndexInt}
           totalQuestions={totalQuestions}
           questionText={question.text}
+          latestAnswer={latestAnswer}
         />
 
         {/* Tip Card */}

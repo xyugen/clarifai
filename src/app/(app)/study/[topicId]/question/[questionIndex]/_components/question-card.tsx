@@ -1,5 +1,6 @@
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
+import type { Answer } from "@/server/db/schema";
 import React from "react";
 import QuestionForm from "./question-form";
 
@@ -8,6 +9,7 @@ interface QuestionCardProps {
   currentQuestionIndex: number;
   totalQuestions: number;
   questionText: string;
+  latestAnswer?: Answer | null;
 }
 
 interface QuestionCardHeaderProps {
@@ -21,6 +23,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   currentQuestionIndex,
   totalQuestions,
   questionText,
+  latestAnswer,
 }) => {
   const isLastQuestion = currentQuestionIndex === totalQuestions;
 
@@ -36,6 +39,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         questionId={questionId}
         currentQuestionIndex={currentQuestionIndex}
         isLastQuestion={isLastQuestion}
+        latestAnswer={latestAnswer?.userAnswer}
       />
     </Card>
   );

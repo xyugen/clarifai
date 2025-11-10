@@ -89,8 +89,18 @@ const aiRouter = createTRPCRouter({
           .max(MAX_ANSWER_LENGTH, `Maximum ${MAX_ANSWER_LENGTH} characters`),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { questionId, userAnswer } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      if (!user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
 
       const questionData = await getQuestionById(questionId);
 
@@ -135,6 +145,7 @@ const aiRouter = createTRPCRouter({
       const answerId = await saveAnswer({
         id: crypto.randomUUID(),
         questionId: question.id,
+        authorId: user.id,
         userAnswer,
       });
 
