@@ -9,12 +9,22 @@ import { formatDistance } from "date-fns";
 import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import DeleteTopicButton from "./delete-topic-button";
+import type React from "react";
 
-const SessionsTable = async () => {
-  const recentSessions = await api.lesson.getTopicsForUser({
-    limit: 6,
-  });
+interface SessionsTableProps {
+  recentSessions: Array<{
+    id: string;
+    title: string;
+    progress: number;
+    answeredCount: number;
+    totalQuestions: number;
+    lastActivity: Date;
+  }>;
+}
 
+const SessionsTable: React.FC<SessionsTableProps> = async ({
+  recentSessions,
+}) => {
   return (
     <>
       {/* Desktop Table View */}
