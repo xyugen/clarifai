@@ -1,4 +1,5 @@
 import {
+  deleteTopicById,
   getFeedbackForAnswer,
   getLatestAnswerFromUser,
   getLesson,
@@ -190,4 +191,18 @@ export const lessonRouter = createTRPCRouter({
 
     return stats;
   }),
+  deleteTopic: protectedProcedure
+    .input(
+      z.object({
+        topicId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { topicId } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      await deleteTopicById(user.id, topicId);
+    }),
 });

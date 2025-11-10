@@ -8,6 +8,7 @@ import { api } from "@/trpc/server";
 import { formatDistance } from "date-fns";
 import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
+import DeleteTopicButton from "./delete-topic-button";
 
 const SessionsTable = async () => {
   const recentSessions = await api.lesson.getTopicsForUser({
@@ -23,7 +24,7 @@ const SessionsTable = async () => {
             <Table.Head className="w-screen">TOPIC</Table.Head>
             <Table.Head className="w-64">PROGRESS</Table.Head>
             <Table.Head className="w-64">LAST ACTIVITY</Table.Head>
-            <Table.Head className="w-25">ACTIONS</Table.Head>
+            <Table.Head className="w-64">ACTIONS</Table.Head>
           </Table.Row>
         </Table.Header>
         <Table.Body className="bg-background">
@@ -50,9 +51,10 @@ const SessionsTable = async () => {
                 <Table.Cell>
                   <Text as={"p"}>{lastActivity}</Text>
                 </Table.Cell>
-                <Table.Cell className="text-right">
+                <Table.Cell className="flex flex-row items-center gap-2">
                   <Link href={`${PageRoutes.STUDY}/${item.id}`}>
                     <Button
+                      className="h-8"
                       variant={completed ? "outline" : "default"}
                       size="sm"
                     >
@@ -60,6 +62,7 @@ const SessionsTable = async () => {
                       <ArrowRight className="size-4" />
                     </Button>
                   </Link>
+                  <DeleteTopicButton topicId={item.id} />
                 </Table.Cell>
               </Table.Row>
             );
@@ -102,11 +105,17 @@ const SessionsTable = async () => {
 
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{lastActivity}</span>
-                <Link href={`${PageRoutes.STUDY}/${item.id}`}>
-                  <Button variant={completed ? "outline" : "default"} size="sm">
-                    {completed ? "REVIEW" : "RESUME"} →
-                  </Button>
-                </Link>
+                <div className="flex items-center gap-2">
+                  <DeleteTopicButton topicId={item.id} />
+                  <Link href={`${PageRoutes.STUDY}/${item.id}`}>
+                    <Button
+                      variant={completed ? "outline" : "default"}
+                      size="sm"
+                    >
+                      {completed ? "REVIEW" : "RESUME"} →
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           );

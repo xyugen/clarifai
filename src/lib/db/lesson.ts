@@ -30,7 +30,7 @@ export const saveLesson = async ({
       id: crypto.randomUUID(),
       title,
       summary,
-      author: authorId,
+      authorId: authorId,
     })
     .returning({ id: topicTable.id })
     .execute();
@@ -70,14 +70,14 @@ export const getLesson = async (lessonId: string) => {
     .select({
       id: topicTable.id,
       title: topicTable.title,
-      authorId: topicTable.author,
+      authorId: topicTable.authorId,
       author: userTable.name,
       summary: topicTable.summary,
       visibility: topicTable.visibility,
       createdAt: topicTable.createdAt,
     })
     .from(topicTable)
-    .leftJoin(userTable, eq(userTable.id, topicTable.author))
+    .leftJoin(userTable, eq(userTable.id, topicTable.authorId))
     .where(eq(topicTable.id, lessonId))
     .limit(1)
     .execute();
@@ -109,7 +109,7 @@ export const getQuestionByIndex = async (
   const [topic] = await db
     .select({
       id: topicTable.id,
-      authorId: topicTable.author,
+      authorId: topicTable.authorId,
       visibility: topicTable.visibility,
     })
     .from(topicTable)
@@ -376,7 +376,7 @@ export const getTopicsForUser = async (userId: string, limit: number) => {
       lastActivity: topicTable.createdAt,
     })
     .from(topicTable)
-    .where(eq(topicTable.author, userId))
+    .where(eq(topicTable.authorId, userId))
     .limit(limit)
     .execute();
 
@@ -434,7 +434,7 @@ export const getUserStats = async (userId: string) => {
   const [sessionsData] = await db
     .select({ sessions: countDistinct(topicTable.id) })
     .from(topicTable)
-    .where(eq(topicTable.author, userId))
+    .where(eq(topicTable.authorId, userId))
     .execute();
 
   const [answeredCountData] = await db
@@ -502,4 +502,26 @@ export const getUserStats = async (userId: string) => {
     streak,
     clarity,
   };
+};
+
+export const deleteTopicById = async (userId: string, topicId: string) => {
+  try {
+    const res = await db
+      .delete(topicTable)
+      .where(and(eq(topicTable.id, topicId), eq(topicTable.authorId, userId)));
+
+    if (res.rowsAffected === 0) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Topic not found or unauthorized",
+      });
+    }
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        "Error deleting topic: " +
+        (error instanceof Error ? error.message : String(error)),
+    });
+  }
 };

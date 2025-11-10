@@ -7,7 +7,7 @@ import { user } from "./auth";
 export const topic = createTable("topic", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
-  author: text("author")
+  authorId: text("authorId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   summary: text("summary"),
