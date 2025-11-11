@@ -1,7 +1,7 @@
 "use client";
 
 import { PageRoutes } from "@/constants/page-routes";
-import { BookOpen, Brain, Upload } from "lucide-react";
+import { BookOpen, Upload } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import QuickActionCard from "./quick-action-card";
 
@@ -9,7 +9,7 @@ const QuickActionCards = () => {
   const router = useRouter();
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <QuickActionCard
         icon={Upload}
         badgeText="NEW"
@@ -23,7 +23,7 @@ const QuickActionCards = () => {
         }}
       />
 
-      <QuickActionCard
+      {/*<QuickActionCard
         icon={Brain}
         badgeText="AI"
         title="FEYNMAN MODE"
@@ -32,7 +32,7 @@ const QuickActionCards = () => {
         bgColor="bg-blue-300"
         badgeColor="bg-blue-200"
         onClick={() => console.log("Feynman Mode clicked")}
-      />
+      />*/}
 
       <QuickActionCard
         icon={BookOpen}
