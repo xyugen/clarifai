@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import FileUploadArea from "./_components/file-upload-area";
 
 export const metadata: Metadata = {
-  title: "Upload Lesson | ClarifAI",
+  title: "Upload Lesson",
 };
 
 const Page = () => {

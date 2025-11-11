@@ -7,7 +7,7 @@ import GoogleButton from "../_components/google-button";
 import SignUpForm from "./_components/signup-form";
 
 export const metadata: Metadata = {
-  title: "Sign Up | ClarifAI",
+  title: "Sign Up",
 };
 
 const Page = () => {

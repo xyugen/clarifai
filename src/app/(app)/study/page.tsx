@@ -3,7 +3,7 @@ import PastLessonsPage from "./_components/past-lessons-page";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Past Lessons | ClarifAI",
+  title: "Past Lessons",
 };
 
 const Page = async () => {
