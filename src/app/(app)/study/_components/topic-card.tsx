@@ -1,7 +1,10 @@
+import DeleteTopicButton from "@/components/delete-topic-button";
+import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
+import { Progress } from "@/components/retroui/Progress";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
-import { ArrowRight, BookOpen, Clock } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
 
@@ -19,9 +22,9 @@ interface TopicCardProps {
 }
 
 const getProgressColor = (progress: number) => {
-  if (progress === 100) return "bg-green-400";
-  if (progress >= 50) return "bg-yellow-400";
-  return "bg-blue-400";
+  if (progress === 100) return "*:bg-green-300!";
+  if (progress >= 50) return "*:bg-yellow-300!";
+  return "*:bg-blue-300!";
 };
 
 const formatDate = (date: Date) => {
@@ -33,63 +36,54 @@ const formatDate = (date: Date) => {
 };
 
 export const TopicCard = memo(({ topic }: TopicCardProps) => {
+  const completed = topic.answeredCount >= topic.totalQuestions;
+
   return (
-    <Link href={`${PageRoutes.STUDY}/${topic.id}`} className="block">
-      <Card className="group w-full cursor-pointer border-2 bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
-          {/* Topic Info */}
-          <div className="min-w-0 flex-1">
-            <Text
-              as="h3"
-              className="mb-2 truncate text-xl transition-colors group-hover:text-pink-600"
-            >
-              {topic.title}
-            </Text>
-            <div className="flex flex-wrap gap-3 text-sm text-gray-600">
-              <div className="flex items-center gap-1">
-                <Clock className="size-4 shrink-0" />
-                <span>{formatDate(topic.lastActivity)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <BookOpen className="size-4 shrink-0" />
-                <span>
-                  {topic.answeredCount} / {topic.totalQuestions} answered
-                </span>
-              </div>
+    <Link href={`${PageRoutes.STUDY}/${topic.id}`} className="group block">
+      <Card className="w-full divide-y-4 divide-black shadow-none hover:shadow-none">
+        <div key={topic.id} className="bg-white p-4">
+          <div className="mb-3 flex items-start gap-3">
+            <div className="flex size-12 shrink-0 items-center justify-center border-2 border-black bg-blue-300">
+              <FileText className="size-6" />
+            </div>
+            <div className="flex-1">
+              <Text
+                as={"h3"}
+                className="decoration-primary mb-1 decoration-2 underline-offset-2 group-hover:underline"
+              >
+                {topic.title}
+              </Text>
+              <p className="text-xs text-gray-600">
+                {topic.answeredCount}/{topic.totalQuestions} answered
+              </p>
             </div>
           </div>
 
-          {/* Progress Section */}
-          <div className="shrink-0 space-y-2 md:w-64">
-            <div className="flex items-center justify-between">
-              <Text as="p" className="text-xs uppercase">
-                Progress
-              </Text>
-              <Text as="p" className="text-lg">
-                {topic.progress}%
-              </Text>
+          <div className="mb-3">
+            <div className="mb-1 flex justify-between">
+              <span className="text-xs">PROGRESS</span>
+              <span className="text-xs">{topic.progress}%</span>
             </div>
-            <div className="h-4 border-2 border-black bg-gray-200">
-              <div
-                className={`h-full ${getProgressColor(topic.progress)} transition-all`}
-                style={{ width: `${topic.progress}%` }}
-              />
-            </div>
-            {topic.progress === 100 && (
-              <div className="border-2 border-black bg-green-100 px-2 py-1 text-center text-xs font-black">
-                ✓ COMPLETED
-              </div>
-            )}
-          </div>
-
-          {/* Action Button */}
-          <button className="flex shrink-0 items-center gap-2 border-2 border-black bg-yellow-400 px-4 py-2 font-bold whitespace-nowrap shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-yellow-500 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
-            {topic.progress === 100 ? "REVIEW" : "CONTINUE"}
-            <ArrowRight
-              className="h-4 w-4 transition-transform group-hover:translate-x-1"
-              strokeWidth={3}
+            <Progress
+              className={getProgressColor(topic.progress)}
+              value={topic.progress}
             />
-          </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-600">
+              {formatDate(topic.lastActivity)}
+            </span>
+            <div className="flex items-center gap-2">
+              <DeleteTopicButton topicId={topic.id} />
+              <Link href={`${PageRoutes.STUDY}/${topic.id}`}>
+                <Button variant={completed ? "outline" : "default"} size="sm">
+                  {completed ? "REVIEW" : "RESUME"}
+                  <ArrowRight className="ml-1 size-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </Card>
     </Link>

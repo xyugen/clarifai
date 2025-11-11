@@ -77,7 +77,7 @@ const PastLessonsPage = ({ topics }: PastLessonsProps) => {
       <PageHeader>
         <div className="relative max-w-2xl">
           <div className="absolute top-1/2 left-4 -translate-y-1/2">
-            <Search className="h-5 w-5" strokeWidth={3} />
+            <Search className="size-5" />
           </div>
           <Input
             type="text"
