@@ -3,6 +3,7 @@ import {
   getFeedbackForAnswer,
   getLatestAnswerFromUser,
   getLesson,
+  getQuestionAnswers as getQuestionAnswersFromUser,
   getQuestionByIndex,
   getTopicsForUser,
   getTopicsForUserWithLimit,
@@ -228,5 +229,21 @@ export const lessonRouter = createTRPCRouter({
       } = ctx;
 
       await deleteTopicById(user.id, topicId);
+    }),
+  getQuestionAnswersFromUser: protectedProcedure
+    .input(
+      z.object({
+        questionId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { questionId } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      const answers = await getQuestionAnswersFromUser(user.id, questionId);
+
+      return answers;
     }),
 });

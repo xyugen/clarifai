@@ -589,3 +589,35 @@ export const deleteTopicById = async (userId: string, topicId: string) => {
     });
   }
 };
+
+export const getQuestionAnswers = async (
+  userId: string,
+  questionId: string,
+) => {
+  const [question] = await db
+    .select()
+    .from(questionTable)
+    .where(eq(questionTable.id, questionId))
+    .limit(1)
+    .execute();
+
+  if (!question) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Question not found",
+    });
+  }
+
+  const answers = await db
+    .select()
+    .from(answerTable)
+    .where(
+      and(
+        eq(answerTable.authorId, userId),
+        eq(answerTable.questionId, questionId),
+      ),
+    )
+    .execute();
+
+  return answers;
+};
