@@ -30,7 +30,7 @@ export const MonthGroup = memo(({ monthYear, topics }: MonthGroupProps) => {
         <div className="ml-4 flex-1 border-t-2 border-black"></div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-2">
         {topics.map((topic) => (
           <TopicCard key={topic.id} topic={topic} />
         ))}

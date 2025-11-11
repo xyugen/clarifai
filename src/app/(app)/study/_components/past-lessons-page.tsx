@@ -39,11 +39,10 @@ const PastLessonsPage = ({ topics }: PastLessonsProps) => {
   }, [topics, searchQuery]);
 
   // Group topics by month
-  // Group topics by month
   const groupedTopics = useMemo(() => {
     const groups: Record<string, Topic[]> = {};
 
-    filteredTopics.forEach((topic) => {
+    filteredTopics.reverse().forEach((topic) => {
       const date = new Date(topic.lastActivity);
       const monthYear = date.toLocaleDateString("en-US", {
         month: "long",
@@ -89,7 +88,7 @@ const PastLessonsPage = ({ topics }: PastLessonsProps) => {
         </div>
       </PageHeader>
 
-      <div className="mx-auto max-w-7xl px-4 py-6">
+      <div className="mx-auto max-w-7xl px-2 py-4 md:px-4 md:py-6">
         <StatsOverview stats={stats} />
 
         {groupedTopics.length === 0 ? (

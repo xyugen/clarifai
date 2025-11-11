@@ -4,6 +4,7 @@ import { Card } from "@/components/retroui/Card";
 import { Progress } from "@/components/retroui/Progress";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
+import { formatDate } from "date-fns";
 import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
@@ -25,14 +26,6 @@ const getProgressColor = (progress: number) => {
   if (progress === 100) return "*:bg-green-300!";
   if (progress >= 50) return "*:bg-yellow-300!";
   return "*:bg-blue-300!";
-};
-
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 };
 
 export const TopicCard = memo(({ topic }: TopicCardProps) => {
@@ -72,7 +65,7 @@ export const TopicCard = memo(({ topic }: TopicCardProps) => {
 
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-600">
-              {formatDate(topic.lastActivity)}
+              {formatDate(topic.lastActivity, "MMM dd, yyyy hh:mm a")}
             </span>
             <div className="flex items-center gap-2">
               <DeleteTopicButton topicId={topic.id} />
