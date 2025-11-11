@@ -7,7 +7,7 @@ import GoogleButton from "../_components/google-button";
 import LoginForm from "./components/login-form";
 
 export const metadata: Metadata = {
-  title: "Log In | ClarifAI",
+  title: "Log In",
 };
 
 const Page = () => {

@@ -8,9 +8,34 @@ import { TRPCReactProvider } from "@/trpc/react";
 import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
-  title: "ClarifAI",
+  title: {
+    template: "%s | ClarifAI",
+    default: "ClarifAI",
+  },
   description: "A web-based study companion powered by AI.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [
+    { rel: "icon", url: "/favicon.ico" },
+    {
+      rel: "apple-touch-icon",
+      url: "/apple-touch-icon.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      url: "/favicon-32x32.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "16x16",
+      url: "/favicon-16x16.png",
+    },
+    {
+      rel: "manifest",
+      url: "/site.webmanifest",
+    },
+  ],
 };
 
 const archivoBlack = Archivo_Black({

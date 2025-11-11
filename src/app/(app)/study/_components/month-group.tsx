@@ -21,8 +21,8 @@ export const MonthGroup = memo(({ monthYear, topics }: MonthGroupProps) => {
   return (
     <div>
       <div className="mb-4 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-purple-400">
-          <Calendar className="h-5 w-5" strokeWidth={3} />
+        <div className="flex size-10 items-center justify-center border-2 border-black bg-purple-400">
+          <Calendar className="size-5" />
         </div>
         <Text as="h2" className="text-2xl uppercase">
           {monthYear}
@@ -30,7 +30,7 @@ export const MonthGroup = memo(({ monthYear, topics }: MonthGroupProps) => {
         <div className="ml-4 flex-1 border-t-2 border-black"></div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-2">
         {topics.map((topic) => (
           <TopicCard key={topic.id} topic={topic} />
         ))}

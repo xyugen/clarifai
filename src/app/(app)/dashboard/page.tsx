@@ -1,15 +1,15 @@
 import { Button } from "@/components/retroui/Button";
+import { PageRoutes } from "@/constants/page-routes";
 import { auth } from "@/server/better-auth";
 import { api } from "@/trpc/server";
 import { ArrowRight } from "lucide-react";
 import { headers } from "next/headers";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import HeroSection from "./_components/hero-section";
 import QuickActionCards from "./_components/quick-action-cards";
 import SessionsTable from "./_components/sessions-table";
 import StatsSection from "./_components/stats-section";
-import Link from "next/link";
-import { PageRoutes } from "@/constants/page-routes";
-import { redirect } from "next/navigation";
 
 const Page = async () => {
   const session = await auth.api.getSession({
@@ -54,16 +54,6 @@ const Page = async () => {
           <SessionsTable recentSessions={recentSessions} />
         </>
       )}
-
-      <Link href={PageRoutes.STUDY}>
-        <Button
-          variant="outline"
-          className="mt-4 flex w-full items-center justify-center gap-2 md:hidden"
-        >
-          <span>VIEW ALL</span>
-          <ArrowRight className="size-4" />
-        </Button>
-      </Link>
     </div>
   );
 };

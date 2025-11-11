@@ -37,7 +37,7 @@ const SessionsTable: React.FC<SessionsTableProps> = async ({
           </Table.Row>
         </Table.Header>
         <Table.Body className="bg-background">
-          {recentSessions.map((item) => {
+          {recentSessions.reverse().map((item) => {
             const completed = item.answeredCount >= item.totalQuestions;
             const lastActivity = formatDistance(item.lastActivity, new Date(), {
               addSuffix: true,

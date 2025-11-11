@@ -45,13 +45,14 @@ const TopNav = ({ user }: { user: User | null }) => {
               </Button>
             </Menu.Trigger>
             <Menu.Content align="end" className="right-0 z-50 min-w-36">
-              <Menu.Item
+              {/* TODO: Add settings page
+                <Menu.Item
                 onClick={() => {
                   router.push(PageRoutes.SETTINGS);
                 }}
               >
                 Settings
-              </Menu.Item>
+              </Menu.Item>*/}
               <Menu.Item onClick={handleSignOut}>Logout</Menu.Item>
             </Menu.Content>
           </Menu>
