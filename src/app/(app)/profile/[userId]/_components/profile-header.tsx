@@ -2,14 +2,13 @@ import { Avatar } from "@/components/retroui/Avatar";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { formatDate } from "date-fns";
-import { BookOpen, Calendar, Mail } from "lucide-react";
+import { BookOpen, Calendar } from "lucide-react";
 import React from "react";
 
 interface ProfileHeaderProps {
   user: {
     id: string;
     name: string;
-    email: string;
     image: string | null;
     createdAt: Date;
   };
@@ -41,10 +40,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               {user.name}
             </Text>
             <div className="flex flex-wrap gap-3 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <Mail className="size-4" />
-                <span>{user.email}</span>
-              </div>
               <div className="flex items-center gap-2">
                 <Calendar className="size-4" />
                 <span>Joined {formatDate(user.createdAt, "MMM dd, yyyy")}</span>

@@ -12,7 +12,6 @@ export const getUserById = async (userId: string) => {
     .select({
       id: userTable.id,
       name: userTable.name,
-      email: userTable.email,
       image: userTable.image,
       createdAt: userTable.createdAt,
     })
