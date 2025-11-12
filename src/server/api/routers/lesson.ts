@@ -1,5 +1,6 @@
 import {
   deleteTopicById,
+  getAnswerWithFeedback,
   getFeedbackForAnswer,
   getLatestAnswerFromUser,
   getLesson,
@@ -293,5 +294,35 @@ export const lessonRouter = createTRPCRouter({
       }
 
       await updateTopicVisibility(topicId, visibility);
+    }),
+  getAnswerWithFeedback: protectedProcedure
+    .input(
+      z.object({
+        answerId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { answerId } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      if (!user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      const answerData = await getAnswerWithFeedback(answerId);
+
+      if (!answerData) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Answer not found",
+        });
+      }
+
+      return answerData;
     }),
 });
