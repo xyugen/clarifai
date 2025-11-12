@@ -25,7 +25,7 @@ import z from "zod";
 import { zfd } from "zod-form-data";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
-const aiRouter = createTRPCRouter({
+export const aiRouter = createTRPCRouter({
   generateQuestionsFromPDF: protectedProcedure
     .input(
       zfd.formData({
@@ -174,5 +174,3 @@ const aiRouter = createTRPCRouter({
       return { feedbackId };
     }),
 });
-
-export default aiRouter;

@@ -3,8 +3,24 @@
  * for Docker builds.
  */
 import "./src/env.js";
+import { env } from "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: `${env.UPLOADTHING_APPID}.ufs.sh`,
+        pathname: "/f/*",
+      },
+    ],
+  },
+};
 
 export default config;

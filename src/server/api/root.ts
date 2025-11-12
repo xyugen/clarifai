@@ -1,6 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-import { lessonRouter } from "./routers";
-import aiRouter from "./routers/ai";
+import { aiRouter, lessonRouter } from "./routers";
 
 /**
  * This is the primary router for your server.
