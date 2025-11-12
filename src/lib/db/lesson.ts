@@ -1,3 +1,4 @@
+import { LESSON_ID_LENGTH } from "@/constants/lesson";
 import { db } from "@/server/db";
 import {
   answer as answerTable,
@@ -7,11 +8,11 @@ import {
   suggestions as suggestionsTable,
   topic as topicTable,
   user as userTable,
-  type InsertAnswer,
   type InsertFeedback,
 } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { and, avg, count, countDistinct, desc, eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 export const saveLesson = async ({
   title,
@@ -27,7 +28,7 @@ export const saveLesson = async ({
   const [topic] = await db
     .insert(topicTable)
     .values({
-      id: crypto.randomUUID(),
+      id: nanoid(LESSON_ID_LENGTH),
       title,
       summary,
       authorId: authorId,
@@ -46,7 +47,7 @@ export const saveLesson = async ({
     .insert(questionTable)
     .values(
       questions.map((q) => ({
-        id: crypto.randomUUID(),
+        id: nanoid(LESSON_ID_LENGTH),
         topicId: topic.id,
         text: q.question,
         referenceAnswer: q.answer,
@@ -179,7 +180,12 @@ export const getQuestionById = async (questionid: string) => {
   return questionData;
 };
 
-export const saveAnswer = async (answerData: InsertAnswer) => {
+export const saveAnswer = async (answerData: {
+  authorId: string;
+  questionId: string;
+  userAnswer: string;
+  createdAt?: Date | undefined;
+}) => {
   const [question] = await db
     .select()
     .from(questionTable)
@@ -197,7 +203,7 @@ export const saveAnswer = async (answerData: InsertAnswer) => {
   const [answer] = await db
     .insert(answerTable)
     .values({
-      id: answerData.id,
+      id: nanoid(LESSON_ID_LENGTH),
       questionId: answerData.questionId,
       authorId: answerData.authorId,
       userAnswer: answerData.userAnswer,
@@ -237,7 +243,7 @@ export const saveFeedback = async (
   const [feedback] = await db
     .insert(feedbackTable)
     .values({
-      id: crypto.randomUUID(),
+      id: nanoid(LESSON_ID_LENGTH),
       answerId: feedbackData.answerId,
       clarityScore: feedbackData.clarityScore,
       summary: feedbackData.summary,
