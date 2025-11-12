@@ -31,6 +31,7 @@ const Page = async ({ params }: Props) => {
         topicId={topicId}
         title={topic.title}
         author={topic.author}
+        authorId={topic.authorId}
         createdAt={topic.createdAt}
         questionCount={questions.length}
       />

@@ -9,4 +9,5 @@ export enum PageRoutes {
   UPLOAD = "/upload",
   STUDY = "/study",
   QUESTION = "/question",
+  PROFILE = "/profile",
 }

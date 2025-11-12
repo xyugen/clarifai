@@ -4,6 +4,7 @@ import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { formatDate } from "date-fns";
 import { BookOpen, Clock, MessageSquare, User } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import PrivacyButton from "./privacy-button";
 
@@ -11,6 +12,7 @@ interface HeaderProps {
   topicId: string;
   title: string;
   author: string | null;
+  authorId: string;
   createdAt: Date;
   questionCount: number;
 }
@@ -19,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({
   topicId,
   title,
   author,
+  authorId,
   createdAt,
   questionCount,
 }: HeaderProps) => {
@@ -51,7 +54,13 @@ const Header: React.FC<HeaderProps> = ({
             <div className="flex flex-wrap gap-3 text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <User className="size-4" />
-                <span>{author}</span>
+                <Link
+                  href={`${PageRoutes.PROFILE}/${authorId}`}
+                  className="hover:text-primary hover:underline"
+                  aria-label={`View ${author}'s profile`}
+                >
+                  {author}
+                </Link>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="size-4" />
