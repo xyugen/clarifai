@@ -38,7 +38,10 @@ const TopNav = () => {
                 className="flex items-center gap-3 px-4 py-2 font-sans"
               >
                 <Avatar className="size-8">
-                  <Avatar.Image src={user.image} alt="User Avatar" />
+                  <Avatar.Image
+                    src={user.image ?? undefined}
+                    alt="User Avatar"
+                  />
                   <Avatar.Fallback>{user.name[0]}</Avatar.Fallback>
                 </Avatar>
                 <span className="hidden sm:block">{user.name}</span>
