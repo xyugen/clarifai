@@ -627,3 +627,20 @@ export const getQuestionAnswers = async (
 
   return answers;
 };
+
+export const updateTopicVisibility = async (
+  topicId: string,
+  visibility: "public" | "private",
+) => {
+  const res = await db
+    .update(topicTable)
+    .set({ visibility })
+    .where(eq(topicTable.id, topicId));
+
+  if (res.rowsAffected === 0) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Topic not found or unauthorized",
+    });
+  }
+};

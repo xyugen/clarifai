@@ -2,8 +2,10 @@ import DeleteTopicButton from "@/components/delete-topic-button";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
+import { formatDate } from "date-fns";
 import { BookOpen, Clock, MessageSquare, User } from "lucide-react";
 import React from "react";
+import PrivacyButton from "./privacy-button";
 
 interface HeaderProps {
   topicId: string;
@@ -48,17 +50,18 @@ const Header: React.FC<HeaderProps> = ({
             </Text>
             <div className="flex flex-wrap gap-3 text-sm text-gray-600">
               <div className="flex items-center gap-2">
-                <User className="size-4" strokeWidth={3} />
+                <User className="size-4" />
                 <span>{author}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="size-4" strokeWidth={3} />
-                <span>{new Date(createdAt).toLocaleDateString()}</span>
+                <Clock className="size-4" />
+                <span>{formatDate(createdAt, "MMM dd, yyyy")}</span>
               </div>
               <div className="flex items-center gap-2">
-                <MessageSquare className="size-4" strokeWidth={3} />
+                <MessageSquare className="size-4" />
                 <span>{questionCount} Questions</span>
               </div>
+              <PrivacyButton topicId={topicId} />
             </div>
           </div>
         </div>

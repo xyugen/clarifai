@@ -9,6 +9,7 @@ import {
   getTopicsForUserWithLimit,
   getUserStats,
   isQuestionAnsweredByUser,
+  updateTopicVisibility,
 } from "@/lib/db";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
@@ -245,5 +246,52 @@ export const lessonRouter = createTRPCRouter({
       const answers = await getQuestionAnswersFromUser(user.id, questionId);
 
       return answers;
+    }),
+  getTopicVisibility: protectedProcedure
+    .input(
+      z.object({
+        topicId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { topicId } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      const { topic } = await getLesson(topicId);
+
+      if (topic.authorId !== user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized access to lesson",
+        });
+      }
+
+      return topic.visibility;
+    }),
+  updateTopicVisibility: protectedProcedure
+    .input(
+      z.object({
+        topicId: z.string(),
+        visibility: z.enum(["public", "private"]),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { topicId, visibility } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      const { topic } = await getLesson(topicId);
+
+      if (topic.authorId !== user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized access to lesson",
+        });
+      }
+
+      await updateTopicVisibility(topicId, visibility);
     }),
 });
