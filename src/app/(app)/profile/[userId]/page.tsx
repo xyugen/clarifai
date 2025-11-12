@@ -10,11 +10,16 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { userId } = await params;
 
-  const { user } = await api.user.getUserProfile({ userId });
-
-  return {
-    title: `${user.name}'s Profile`,
-  };
+  try {
+    const { user } = await api.user.getUserProfile({ userId });
+    return {
+      title: `${user.name}'s Profile`,
+    };
+  } catch (error) {
+    return {
+      title: "User Not Found",
+    };
+  }
 }
 
 const Page = async ({ params }: Props) => {

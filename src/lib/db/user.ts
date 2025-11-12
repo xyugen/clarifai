@@ -31,39 +31,35 @@ export const getUserById = async (userId: string) => {
 };
 
 export const getPublicTopicsForUser = async (userId: string) => {
-  const topics = await db
+  const topicsWithQuestionCount = await db
     .select({
       id: topicTable.id,
       title: topicTable.title,
       summary: topicTable.summary,
       visibility: topicTable.visibility,
       createdAt: topicTable.createdAt,
+      questionCount: count(questionTable.id),
     })
     .from(topicTable)
+    .leftJoin(questionTable, eq(questionTable.topicId, topicTable.id))
     .where(
       and(
         eq(topicTable.authorId, userId),
         eq(topicTable.visibility, "public")
       )
     )
+    .groupBy(
+      topicTable.id,
+      topicTable.title,
+      topicTable.summary,
+      topicTable.visibility,
+      topicTable.createdAt
+    )
     .orderBy(desc(topicTable.createdAt))
     .execute();
 
-  // Get question count for each topic
-  const topicsWithQuestionCount = await Promise.all(
-    topics.map(async (topic) => {
-      const [questionCountData] = await db
-        .select({ questionCount: count(questionTable.id) })
-        .from(questionTable)
-        .where(eq(questionTable.topicId, topic.id))
-        .execute();
-
-      return {
-        ...topic,
-        questionCount: Number(questionCountData?.questionCount ?? 0),
-      };
-    })
-  );
-
-  return topicsWithQuestionCount;
+  return topicsWithQuestionCount.map((topic) => ({
+    ...topic,
+    questionCount: Number(topic.questionCount ?? 0),
+  }));
 };
