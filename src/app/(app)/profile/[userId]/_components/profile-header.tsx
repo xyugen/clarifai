@@ -26,7 +26,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           <Card className="border-foreground bg-primary flex size-24 shrink-0 items-center justify-center overflow-hidden border-2 hover:shadow-md md:size-32">
             <Avatar className="size-full border-0">
               <Avatar.Image src={user.image ?? undefined} alt={user.name} />
-              <Avatar.Fallback>{user.name[0]?.toUpperCase() || "U"}</Avatar.Fallback>
+              <Avatar.Fallback>{user.name[0]?.toUpperCase() ?? "U"}</Avatar.Fallback>
             </Avatar>
           </Card>
           <div className="flex-1">
