@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { env } from "@/env";
 import Redis from "ioredis";
 
@@ -16,7 +20,8 @@ export function getRedisClient(): Redis | null {
   // Create Redis client if it doesn't exist
   if (!redis) {
     try {
-      redis = new Redis(env.REDIS_URL, {
+      const redisUrl = `redis://${env.REDIS_USERNAME}:${env.REDIS_PASSWORD}\@${env.REDIS_URL.replace(/^redis:\/\//, "")}`;
+      redis = new Redis(encodeURI(redisUrl), {
         maxRetriesPerRequest: 3,
         retryStrategy: (times) => {
           if (times > 3) {

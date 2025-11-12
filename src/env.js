@@ -19,6 +19,8 @@ export const env = createEnv({
     UPLOADTHING_APPID: z.string(),
     UPLOADTHING_TOKEN: z.string(),
     REDIS_URL: z.string().url().optional(),
+    REDIS_USERNAME: z.string().optional(),
+    REDIS_PASSWORD: z.string().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -47,6 +49,8 @@ export const env = createEnv({
     UPLOADTHING_APPID: process.env.UPLOADTHING_APPID,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     REDIS_URL: process.env.REDIS_URL,
+    REDIS_USERNAME: process.env.REDIS_USERNAME,
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**
