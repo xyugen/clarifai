@@ -8,14 +8,15 @@ import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TRPCError } from "@trpc/server";
 import { Send, Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
 import { formSchema, MAX_ANSWER_LENGTH } from "./schema";
-import { useRouter } from "nextjs-toploader/app";
 
 interface QuestionFormProps {
   questionId: string;
@@ -37,6 +38,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
   const generateFeedbackMutation =
     api.ai.generateFeedbackFromAnswer.useMutation();
+  const { refetch } = api.lesson.getQuestionAnswersFromUser.useQuery({
+    questionId,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,29 +49,25 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { answer } = data;
 
-    generateFeedbackMutation.mutate(
-      {
+    try {
+      await generateFeedbackMutation.mutateAsync({
         questionId,
         userAnswer: answer,
-      },
-      {
-        onSuccess: () => {
-          setIsAnswered(true);
-          router.refresh();
-        },
-        onError: (error) => {
-          console.error("Error generating feedback:", error);
-          toast.error(
-            error.data?.code === "BAD_REQUEST"
-              ? error.message
-              : "An error occurred while submitting your answer.",
-          );
-        },
-      },
-    );
+      });
+      setIsAnswered(true);
+      await refetch();
+      router.refresh();
+    } catch (error) {
+      console.error("Error generating feedback:", error);
+      if (error instanceof Error) {
+        toast.error("An error occurred while submitting your answer.");
+      } else if (error instanceof TRPCError) {
+        toast.error(error.message);
+      }
+    }
   };
 
   const handleSkipQuestion = () => {

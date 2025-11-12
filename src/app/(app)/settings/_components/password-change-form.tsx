@@ -7,120 +7,67 @@ import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { PageRoutes } from "@/constants/page-routes";
 import { authClient } from "@/server/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
-import { formSchema } from "./schema";
+import { passwordFormSchema } from "./schema";
 
-const SignUpForm = () => {
+export const PasswordChangeForm = () => {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
+  const form = useForm<z.infer<typeof passwordFormSchema>>({
+    resolver: zodResolver(passwordFormSchema),
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const { name, email, password } = data;
-
-    const toastId = toast.loading("Signing up...");
+  const onSubmit = async (data: z.infer<typeof passwordFormSchema>) => {
+    const toastId = toast.loading("Changing password...");
     try {
-      await authClient.signUp.email(
+      await authClient.changePassword(
         {
-          name,
-          email,
-          password,
-          callbackURL: PageRoutes.LOGIN,
+          newPassword: data.newPassword,
+          currentPassword: data.currentPassword,
+          revokeOtherSessions: true,
         },
         {
           onSuccess: () => {
-            toast.success("Sign up successful!", {
-              id: toastId,
-            });
-            router.push(PageRoutes.LOGIN);
-          },
-          onError: (error) => {
-            toast.error(
-              error.error.message || "Failed to sign up. Please try again.",
+            toast.success(
+              "Password changed successfully! Please log in again.",
               {
                 id: toastId,
               },
             );
           },
+          onError: (error) => {
+            toast.error(error.error.message || "Failed to change password.", {
+              id: toastId,
+            });
+          },
         },
       );
+
+      router.push(PageRoutes.LOGIN);
     } catch (error) {
       toast.error("An unexpected error occurred.", {
         id: toastId,
       });
-      console.error("Sign up error:", error);
+      console.error("Password change error:", error);
     }
   };
 
   return (
-    <form
-      id="form-signup"
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-4"
-    >
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <FieldGroup>
         <Controller
+          name="currentPassword"
           control={form.control}
-          name="name"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="currentPassword">Current Password</Label>
               <Input
                 {...field}
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-      </FieldGroup>
-
-      <FieldGroup>
-        <Controller
-          control={form.control}
-          name="email"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                {...field}
-                id="email"
-                placeholder="your@email.com"
-                aria-invalid={fieldState.invalid}
-                required
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-      </FieldGroup>
-
-      <FieldGroup>
-        <Controller
-          control={form.control}
-          name="password"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                {...field}
-                id="password"
-                type="password"
+                id="currentPassword"
+                type="currentPassword"
                 placeholder="••••••••"
                 aria-invalid={fieldState.invalid}
                 required
@@ -130,18 +77,37 @@ const SignUpForm = () => {
           )}
         />
       </FieldGroup>
-
-      <FieldGroup className="mb-6">
+      <FieldGroup>
         <Controller
+          name="newPassword"
           control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                {...field}
+                id="newPassword"
+                type="newPassword"
+                placeholder="••••••••"
+                aria-invalid={fieldState.invalid}
+                required
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </FieldGroup>
+      <FieldGroup>
+        <Controller
           name="confirmPassword"
+          control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input
                 {...field}
                 id="confirmPassword"
-                type="password"
+                type="confirmPassword"
                 placeholder="••••••••"
                 aria-invalid={fieldState.invalid}
                 required
@@ -152,19 +118,11 @@ const SignUpForm = () => {
         />
       </FieldGroup>
 
-      <Field>
-        <Button
-          type="submit"
-          variant="default"
-          form="form-signup"
-          className="mb-4 flex w-full items-center justify-center gap-2"
-          disabled={form.formState.isSubmitting}
-        >
-          <span>SIGN UP</span> <ArrowRight className="size-5" />
+      <div className="pt-4">
+        <Button type="submit" variant="default">
+          Change Password
         </Button>
-      </Field>
+      </div>
     </form>
   );
 };
-
-export default SignUpForm;

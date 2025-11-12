@@ -10,8 +10,11 @@ import type { User } from "better-auth";
 import { useRouter } from "nextjs-toploader/app";
 import { toast } from "sonner";
 
-const TopNav = ({ user }: { user: User | null }) => {
+const TopNav = () => {
   const router = useRouter();
+
+  const session = authClient.useSession();
+  const user: User | null = session.data?.user ?? null;
 
   const handleSignOut = async () => {
     toast.promise(authClient.signOut(), {
@@ -35,24 +38,20 @@ const TopNav = ({ user }: { user: User | null }) => {
                 className="flex items-center gap-3 px-4 py-2 font-sans"
               >
                 <Avatar className="size-8">
-                  <Avatar.Image
-                    src={user.image ?? "/avatar.png"}
-                    alt="User Avatar"
-                  />
+                  <Avatar.Image src={user.image} alt="User Avatar" />
                   <Avatar.Fallback>{user.name[0]}</Avatar.Fallback>
                 </Avatar>
-                <span className="hidden font-bold sm:block">{user.name}</span>
+                <span className="hidden sm:block">{user.name}</span>
               </Button>
             </Menu.Trigger>
             <Menu.Content align="end" className="right-0 z-50 min-w-36">
-              {/* TODO: Add settings page
-                <Menu.Item
+              <Menu.Item
                 onClick={() => {
                   router.push(PageRoutes.SETTINGS);
                 }}
               >
                 Settings
-              </Menu.Item>*/}
+              </Menu.Item>
               <Menu.Item onClick={handleSignOut}>Logout</Menu.Item>
             </Menu.Content>
           </Menu>

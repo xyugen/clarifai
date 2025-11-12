@@ -26,19 +26,38 @@ const LoginForm = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { email, password, rememberMe } = data;
-    toast.promise(
-      authClient.signIn.email({
-        email,
-        password,
-        rememberMe,
-        callbackURL: PageRoutes.DASHBOARD,
-      }),
-      {
-        loading: "Signing in...",
-        success: "Signed in successfully!",
-        error: "Failed to sign in.",
-      },
-    );
+
+    const toastId = toast.loading("Signing in...");
+    try {
+      await authClient.signIn.email(
+        {
+          email,
+          password,
+          rememberMe,
+          callbackURL: PageRoutes.DASHBOARD,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Sign in successful!", {
+              id: toastId,
+            });
+          },
+          onError: (error) => {
+            toast.error(
+              error.error.message || "Failed to sign in. Please try again.",
+              {
+                id: toastId,
+              },
+            );
+          },
+        },
+      );
+    } catch (error) {
+      toast.error("An unexpected error occurred.", {
+        id: toastId,
+      });
+      console.error(error);
+    }
   };
 
   return (
@@ -122,6 +141,7 @@ const LoginForm = () => {
           variant="default"
           form="form-login"
           className="mb-4 flex w-full items-center justify-center gap-2"
+          disabled={form.formState.isSubmitting}
         >
           <span>LOG IN</span> <ArrowRight className="size-5" />
         </Button>

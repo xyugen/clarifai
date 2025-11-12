@@ -627,3 +627,44 @@ export const getQuestionAnswers = async (
 
   return answers;
 };
+
+export const updateTopicVisibility = async (
+  topicId: string,
+  visibility: "public" | "private",
+) => {
+  const res = await db
+    .update(topicTable)
+    .set({ visibility })
+    .where(eq(topicTable.id, topicId));
+
+  if (res.rowsAffected === 0) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Topic not found or unauthorized",
+    });
+  }
+};
+
+export const getAnswerWithFeedback = async (answerId: string) => {
+  const [answerData] = await db
+    .select()
+    .from(answerTable)
+    .where(eq(answerTable.id, answerId))
+    .innerJoin(questionTable, eq(questionTable.id, answerTable.questionId))
+    .limit(1)
+    .execute();
+
+  if (!answerData) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Answer not found",
+    });
+  }
+
+  const feedbackData = await getFeedbackForAnswer(answerId);
+
+  return {
+    answerData,
+    feedbackData,
+  };
+};
