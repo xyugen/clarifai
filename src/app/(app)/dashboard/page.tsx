@@ -26,10 +26,12 @@ const Page = async () => {
     limit: 6,
   });
 
+  const hasSessions = recentSessions.length > 0;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <section className="mb-8">
-        <HeroSection userName={userName} />
+        <HeroSection userName={userName} hasSessions={hasSessions} />
         <QuickActionCards />
       </section>
 
