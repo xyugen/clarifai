@@ -18,6 +18,7 @@ export const env = createEnv({
     GROQ_API_KEY: z.string(),
     UPLOADTHING_APPID: z.string(),
     UPLOADTHING_TOKEN: z.string(),
+    REDIS_URL: z.string().url().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -45,6 +46,7 @@ export const env = createEnv({
     GROQ_API_KEY: process.env.GROQ_API_KEY,
     UPLOADTHING_APPID: process.env.UPLOADTHING_APPID,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+    REDIS_URL: process.env.REDIS_URL,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**

@@ -18,6 +18,12 @@ import {
   saveFeedback,
   saveLesson,
 } from "@/lib/db";
+import {
+  CachePrefix,
+  deleteCached,
+  deleteCachedByPattern,
+} from "@/lib/redis/cache";
+import { checkRateLimit, RateLimits } from "@/lib/redis/rate-limit";
 import { estimateTokens } from "@/lib/utils";
 import { TRPCError } from "@trpc/server";
 import { generateObject } from "ai";
@@ -40,6 +46,10 @@ export const aiRouter = createTRPCRouter({
         session: { user },
       } = ctx;
       const numQuestions = numQuestionsRaw ?? 5;
+      
+      // Check rate limit for AI generation
+      await checkRateLimit(user.id, "ai:generate", RateLimits.AI_GENERATION);
+
       if (!file) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -80,6 +90,12 @@ export const aiRouter = createTRPCRouter({
         authorId: user.id,
       });
 
+      // Invalidate user's topic lists and stats cache after creating a new lesson
+      await Promise.all([
+        deleteCachedByPattern(`${CachePrefix.USER_TOPICS}${user.id}:*`),
+        deleteCached(`${CachePrefix.USER_STATS}${user.id}`),
+      ]);
+
       return { topicId };
     }),
   generateFeedbackFromAnswer: protectedProcedure
@@ -104,6 +120,9 @@ export const aiRouter = createTRPCRouter({
           message: "User not authenticated",
         });
       }
+
+      // Check rate limit for AI generation
+      await checkRateLimit(user.id, "ai:feedback", RateLimits.AI_GENERATION);
 
       const questionData = await getQuestionById(questionId);
 
@@ -170,6 +189,9 @@ export const aiRouter = createTRPCRouter({
         data.object.keyPointsMissed,
         data.object.suggestions,
       );
+
+      // Invalidate user stats cache after submitting an answer
+      await deleteCached(`${CachePrefix.USER_STATS}${user.id}`);
 
       return { feedbackId };
     }),
