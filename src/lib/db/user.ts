@@ -5,7 +5,7 @@ import {
   question as questionTable,
 } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 export const getUserById = async (userId: string) => {
   const [user] = await db
@@ -47,7 +47,7 @@ export const getPublicTopicsForUser = async (userId: string) => {
         eq(topicTable.visibility, "public")
       )
     )
-    .orderBy(topicTable.createdAt)
+    .orderBy(desc(topicTable.createdAt))
     .execute();
 
   // Get question count for each topic
