@@ -1,9 +1,10 @@
-import { Avatar } from "@/components/retroui/Avatar";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { formatDate } from "date-fns";
 import { BookOpen, Calendar } from "lucide-react";
+import Image from "next/image";
 import React from "react";
+import ShareButton from "./share-button";
 
 interface ProfileHeaderProps {
   user: {
@@ -23,19 +24,31 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     <div className="border-b-2 border-black bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-4 flex items-start gap-6">
-          <Card className="border-foreground bg-primary flex size-24 shrink-0 items-center justify-center overflow-hidden border-2 hover:shadow-md md:size-32">
-            <Avatar className="size-full border-0">
-              <Avatar.Image src={user.image ?? undefined} alt={user.name} />
-              <Avatar.Fallback>{user.name[0]?.toUpperCase() ?? "U"}</Avatar.Fallback>
-            </Avatar>
-          </Card>
+          <div className="bg-primary border-primary flex size-32 shrink-0 items-center justify-center overflow-hidden border-4 shadow-md">
+            {user.image ? (
+              <Image
+                src={user.image ?? undefined}
+                alt="Profile"
+                width={128}
+                height={128}
+                className="size-full object-cover"
+              />
+            ) : (
+              <span className="text-6xl">
+                {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+              </span>
+            )}
+          </div>
           <div className="flex-1">
-            <Card className="border-foreground mb-3 inline-block -rotate-1 border-2 bg-yellow-300 px-3 py-1 shadow hover:shadow">
-              <span className="text-xs font-bold">USER PROFILE</span>
-            </Card>
+            <div className="mb-3 flex w-fit flex-row items-center justify-center gap-3">
+              <Card className="border-foreground bg-primary inline-block border-2 px-3 py-1 shadow hover:shadow">
+                <span className="text-xs font-bold">USER PROFILE</span>
+              </Card>
+              <ShareButton />
+            </div>
             <Text
               as="h1"
-              className="mb-3 text-3xl font-black leading-tight md:text-5xl"
+              className="mb-3 text-3xl leading-tight font-black md:text-5xl"
             >
               {user.name}
             </Text>

@@ -4,11 +4,15 @@ import { lastLoginMethod } from "better-auth/plugins";
 
 import { env } from "@/env";
 import { db } from "@/server/db";
+import { nanoid } from "nanoid";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "sqlite",
   }),
+  advanced: {
+    generateId: () => nanoid(8),
+  },
   emailAndPassword: {
     enabled: true,
   },

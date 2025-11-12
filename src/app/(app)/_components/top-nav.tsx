@@ -30,7 +30,11 @@ const TopNav = () => {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <Title />
 
-        {user ? (
+        {session.isPending ? (
+          <>
+            <div className="h-8 w-24 animate-pulse bg-gray-200"></div>
+          </>
+        ) : user ? (
           <Menu>
             <Menu.Trigger asChild>
               <Button
@@ -48,6 +52,13 @@ const TopNav = () => {
               </Button>
             </Menu.Trigger>
             <Menu.Content align="end" className="right-0 z-50 min-w-36">
+              <Menu.Item
+                onClick={() => {
+                  router.push(`${PageRoutes.PROFILE}/${user.id}`);
+                }}
+              >
+                Profile
+              </Menu.Item>
               <Menu.Item
                 onClick={() => {
                   router.push(PageRoutes.SETTINGS);

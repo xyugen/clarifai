@@ -27,8 +27,8 @@ const PublicTopicsList: React.FC<PublicTopicsListProps> = ({
 }: PublicTopicsListProps) => {
   if (topics.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl">
-        <Card className="border-foreground bg-white p-8 text-center">
+      <div>
+        <Card className="border-foreground w-full bg-white p-8 text-center">
           <div className="mx-auto mb-4 flex size-16 items-center justify-center border-2 border-black bg-gray-200">
             <BookOpen className="size-8 text-gray-500" />
           </div>
