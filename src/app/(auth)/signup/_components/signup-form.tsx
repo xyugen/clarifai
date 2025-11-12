@@ -8,12 +8,15 @@ import { PageRoutes } from "@/constants/page-routes";
 import { authClient } from "@/server/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
+import { useRouter } from "nextjs-toploader/app";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
 import { formSchema } from "./schema";
 
 const SignUpForm = () => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -26,19 +29,39 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { name, email, password } = data;
-    toast.promise(
-      authClient.signUp.email({
-        name,
-        email,
-        password,
-        callbackURL: PageRoutes.LOGIN,
-      }),
-      {
-        loading: "Signing up...",
-        success: "Signed up successfully!",
-        error: "Failed to sign up.",
-      },
-    );
+
+    const toastId = toast.loading("Signing up...");
+    try {
+      await authClient.signUp.email(
+        {
+          name,
+          email,
+          password,
+          callbackURL: PageRoutes.LOGIN,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Sign up successful!", {
+              id: toastId,
+            });
+            router.push(PageRoutes.LOGIN);
+          },
+          onError: (error) => {
+            toast.error(
+              error.error.message || "Failed to sign up. Please try again.",
+              {
+                id: toastId,
+              },
+            );
+          },
+        },
+      );
+    } catch (error) {
+      toast.error("An unexpected error occurred.", {
+        id: toastId,
+      });
+      console.error("Sign up error:", error);
+    }
   };
 
   return (
@@ -135,6 +158,7 @@ const SignUpForm = () => {
           variant="default"
           form="form-signup"
           className="mb-4 flex w-full items-center justify-center gap-2"
+          disabled={form.formState.isSubmitting}
         >
           <span>SIGN UP</span> <ArrowRight className="size-5" />
         </Button>

@@ -4,8 +4,7 @@ import { Label } from "@/components/retroui/Label";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { authClient } from "@/server/better-auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "nextjs-toploader/app";
-import React, { useState } from "react";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
@@ -16,10 +15,6 @@ interface NameFormProps {
 }
 
 const NameForm: React.FC<NameFormProps> = ({ currentName }) => {
-  const router = useRouter();
-
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
-
   const form = useForm<z.infer<typeof nameFormSchema>>({
     resolver: zodResolver(nameFormSchema),
     defaultValues: {
@@ -28,31 +23,29 @@ const NameForm: React.FC<NameFormProps> = ({ currentName }) => {
   });
 
   const onSubmit = async (data: z.infer<typeof nameFormSchema>) => {
-    setSubmitting(true);
+    const toastId = toast.loading("Saving name...");
     try {
-      toast.promise(
-        authClient.updateUser(
-          {
-            name: data.name.trim(),
-          },
-          {
-            query: {
-              disableCookieCache: true,
-            },
-          },
-        ),
+      await authClient.updateUser(
         {
-          loading: "Saving name...",
-          success: "Name updated successfully!",
-          error: "Failed to update name.",
+          name: data.name.trim(),
+        },
+        {
+          query: {
+            disableCookieCache: true,
+          },
+          onSuccess: () => {
+            toast.success("Name updated successfully!", { id: toastId });
+          },
+          onError: (error) => {
+            toast.error(error.error.message || "Failed to update name.", {
+              id: toastId,
+            });
+          },
         },
       );
     } catch (error) {
       console.error("Error updating name:", error);
-      toast.error("An unexpected error occurred.");
-    } finally {
-      setSubmitting(false);
-      router.refresh();
+      toast.error("An unexpected error occurred.", { id: toastId });
     }
   };
 
@@ -86,11 +79,13 @@ const NameForm: React.FC<NameFormProps> = ({ currentName }) => {
         />
         <Button
           type="submit"
-          disabled={isSubmitting || currentName === form.watch("name")}
+          disabled={
+            form.formState.isSubmitting || currentName === form.watch("name")
+          }
           className="h-11"
           variant="default"
         >
-          {isSubmitting ? "SAVING..." : "SAVE"}
+          {form.formState.isSubmitting ? "SAVING..." : "SAVE"}
         </Button>
       </FieldGroup>
     </form>

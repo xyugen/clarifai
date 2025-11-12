@@ -8,18 +8,37 @@ import { toast } from "sonner";
 
 const GoogleButton = () => {
   const handleGoogleLogin = async () => {
-    toast.promise(
-      authClient.signIn.social({
-        provider: "google",
-        callbackURL: PageRoutes.DASHBOARD,
-        errorCallbackURL: PageRoutes.LOGIN,
-      }),
-      {
-        loading: "Signing in with Google...",
-        success: "Successfully signed in!",
-        error: "Failed to sign in with Google.",
-      },
-    );
+    const toastId = toast.loading("Redirecting to Google...");
+    try {
+      await authClient.signIn.social(
+        {
+          provider: "google",
+          callbackURL: PageRoutes.DASHBOARD,
+          errorCallbackURL: PageRoutes.LOGIN,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Redirecting to Google...", {
+              id: toastId,
+            });
+          },
+          onError: (error) => {
+            toast.error(
+              error.error.message ||
+                "Failed to redirect to Google. Please try again.",
+              {
+                id: toastId,
+              },
+            );
+          },
+        },
+      );
+    } catch (error) {
+      toast.error("An unexpected error occurred.", {
+        id: toastId,
+      });
+      console.error(error);
+    }
   };
 
   return (

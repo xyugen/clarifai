@@ -21,23 +21,36 @@ export const PasswordChangeForm = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof passwordFormSchema>) => {
+    const toastId = toast.loading("Changing password...");
     try {
-      toast.promise(
-        authClient.changePassword({
+      await authClient.changePassword(
+        {
           newPassword: data.newPassword,
           currentPassword: data.currentPassword,
           revokeOtherSessions: true,
-        }),
+        },
         {
-          loading: "Changing password...",
-          success: "Password changed successfully! Please log in again.",
-          error: "Failed to change password.",
+          onSuccess: () => {
+            toast.success(
+              "Password changed successfully! Please log in again.",
+              {
+                id: toastId,
+              },
+            );
+          },
+          onError: (error) => {
+            toast.error(error.error.message || "Failed to change password.", {
+              id: toastId,
+            });
+          },
         },
       );
 
       router.push(PageRoutes.LOGIN);
     } catch (error) {
-      toast.error("An unexpected error occurred.");
+      toast.error("An unexpected error occurred.", {
+        id: toastId,
+      });
       console.error("Password change error:", error);
     }
   };
