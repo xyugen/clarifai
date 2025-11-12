@@ -146,7 +146,6 @@ const aiRouter = createTRPCRouter({
       }
 
       const answerId = await saveAnswer({
-        id: crypto.randomUUID(),
         questionId: question.id,
         authorId: user.id,
         userAnswer,

@@ -49,6 +49,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.41.0",
     "lucide-react": "^0.552.0",
+    "nanoid": "^5.1.6",
     "next": "^15.2.3",
     "nextjs-toploader": "^3.9.17",
     "pdf-parse": "^1.1.1",
