@@ -12,6 +12,14 @@ import {
   isQuestionAnsweredByUser,
   updateTopicVisibility,
 } from "@/lib/db";
+import {
+  CachePrefix,
+  CacheTTL,
+  deleteCached,
+  deleteCachedByPattern,
+  getCached,
+  setCached,
+} from "@/lib/redis/cache";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -29,6 +37,28 @@ export const lessonRouter = createTRPCRouter({
         session: { user },
       } = ctx;
 
+      // Try to get from cache first
+      const cacheKey = `${CachePrefix.LESSON}${topicId}`;
+      const cached = await getCached<{
+        topic: Awaited<ReturnType<typeof getLesson>>["topic"];
+        questions: Awaited<ReturnType<typeof getLesson>>["questions"];
+      }>(cacheKey);
+
+      if (cached) {
+        // Check authorization for cached data
+        if (
+          cached.topic.authorId !== user.id &&
+          cached.topic.visibility === "private"
+        ) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Unauthorized access to lesson",
+          });
+        }
+        return cached;
+      }
+
+      // If not in cache, fetch from database
       const { topic, questions } = await getLesson(topicId);
 
       if (topic.authorId !== user.id && topic.visibility === "private") {
@@ -37,6 +67,9 @@ export const lessonRouter = createTRPCRouter({
           message: "Unauthorized access to lesson",
         });
       }
+
+      // Cache the result
+      await setCached(cacheKey, { topic, questions }, CacheTTL.LESSON);
 
       return { topic, questions };
     }),
@@ -162,6 +195,17 @@ export const lessonRouter = createTRPCRouter({
       });
     }
 
+    // Try to get from cache first
+    const cacheKey = `${CachePrefix.USER_TOPICS}${user.id}:all`;
+    const cached = await getCached<
+      Awaited<ReturnType<typeof getTopicsForUser>>
+    >(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
+    // If not in cache, fetch from database
     const topics = await getTopicsForUser(user.id);
 
     if (!topics) {
@@ -170,6 +214,9 @@ export const lessonRouter = createTRPCRouter({
         message: "Topics not found",
       });
     }
+
+    // Cache the result
+    await setCached(cacheKey, topics, CacheTTL.LESSON);
 
     return topics;
   }),
@@ -214,7 +261,21 @@ export const lessonRouter = createTRPCRouter({
       });
     }
 
+    // Try to get from cache first
+    const cacheKey = `${CachePrefix.USER_STATS}${user.id}`;
+    const cached = await getCached<Awaited<ReturnType<typeof getUserStats>>>(
+      cacheKey,
+    );
+
+    if (cached) {
+      return cached;
+    }
+
+    // If not in cache, fetch from database
     const stats = await getUserStats(user.id);
+
+    // Cache the result
+    await setCached(cacheKey, stats, CacheTTL.USER_STATS);
 
     return stats;
   }),
@@ -231,6 +292,13 @@ export const lessonRouter = createTRPCRouter({
       } = ctx;
 
       await deleteTopicById(user.id, topicId);
+
+      // Invalidate related caches
+      await Promise.all([
+        deleteCached(`${CachePrefix.LESSON}${topicId}`),
+        deleteCachedByPattern(`${CachePrefix.USER_TOPICS}${user.id}:*`),
+        deleteCached(`${CachePrefix.USER_STATS}${user.id}`),
+      ]);
     }),
   getQuestionAnswersFromUser: protectedProcedure
     .input(
@@ -294,6 +362,12 @@ export const lessonRouter = createTRPCRouter({
       }
 
       await updateTopicVisibility(topicId, visibility);
+
+      // Invalidate related caches
+      await Promise.all([
+        deleteCached(`${CachePrefix.LESSON}${topicId}`),
+        deleteCachedByPattern(`${CachePrefix.USER_TOPICS}${user.id}:*`),
+      ]);
     }),
   getAnswerWithFeedback: protectedProcedure
     .input(
