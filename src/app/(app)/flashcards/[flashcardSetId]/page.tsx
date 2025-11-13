@@ -42,7 +42,7 @@ const Page = async ({ params }: Props) => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100">
+    <div className="min-h-screen bg-blue-300">
       <div className="mx-auto max-w-5xl px-4 py-8">
         <FlashcardStudy
           flashcardSet={flashcardSet}

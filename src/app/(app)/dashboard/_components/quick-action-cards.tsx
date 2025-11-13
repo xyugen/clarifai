@@ -9,7 +9,7 @@ const QuickActionCards = () => {
   const router = useRouter();
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       <QuickActionCard
         icon={Upload}
         badgeText="NEW"
@@ -57,6 +57,19 @@ const QuickActionCards = () => {
         badgeColor="bg-green-200"
         onClick={() => {
           router.push(PageRoutes.STUDY);
+        }}
+      />
+
+      <QuickActionCard
+        icon={CreditCard}
+        badgeText="LIBRARY"
+        title="MY FLASHCARDS"
+        description="Review and study your flashcard sets"
+        buttonText="VIEW ALL"
+        bgColor="bg-blue-300"
+        badgeColor="bg-blue-200"
+        onClick={() => {
+          router.push(PageRoutes.FLASHCARDS);
         }}
       />
     </div>
