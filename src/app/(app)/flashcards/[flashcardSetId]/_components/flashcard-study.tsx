@@ -148,12 +148,12 @@ const FlashcardStudy = ({ flashcardSet, flashcards }: FlashcardStudyProps) => {
             </div>
           </div>
 
-          <div className="mb-4">
-            <Text as="h1" className="mb-1 text-2xl md:text-3xl">
+          <div className="mb-4 space-y-2">
+            <Text as="h1" className="text-2xl md:text-3xl">
               {flashcardSet.title}
             </Text>
             {flashcardSet.summary && (
-              <Text as="p" className="text-sm text-gray-600">
+              <Text as="p" className="text-gray-600">
                 {flashcardSet.summary}
               </Text>
             )}

@@ -7,7 +7,6 @@ import { PageRoutes } from "@/constants/page-routes";
 import { formatDate } from "date-fns";
 import { ArrowRight, CreditCard, Plus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "nextjs-toploader/app";
 import React from "react";
 
 interface FlashcardSet {
@@ -26,8 +25,6 @@ interface FlashcardSetsListProps {
 const FlashcardSetsList: React.FC<FlashcardSetsListProps> = ({
   flashcardSets,
 }) => {
-  const router = useRouter();
-
   if (flashcardSets.length === 0) {
     return (
       <div className="text-center">
@@ -41,13 +38,6 @@ const FlashcardSetsList: React.FC<FlashcardSetsListProps> = ({
           <p className="mb-4 text-gray-600">
             Create your first flashcard set to get started.
           </p>
-          <Button
-            variant="default"
-            onClick={() => router.push(`${PageRoutes.FLASHCARDS}/upload`)}
-          >
-            <Plus className="mr-2 size-4" />
-            Create Flashcard Set
-          </Button>
         </Card>
       </div>
     );
@@ -60,12 +50,6 @@ const FlashcardSetsList: React.FC<FlashcardSetsListProps> = ({
           {flashcardSets.length} flashcard set
           {flashcardSets.length !== 1 ? "s" : ""}
         </Text>
-        <Link href={`${PageRoutes.FLASHCARDS}/upload`}>
-          <Button variant="default">
-            <Plus className="mr-2 size-4" />
-            New Set
-          </Button>
-        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
