@@ -190,6 +190,7 @@ clarifai/
 ### Code Quality
 
 The project uses:
+
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **TypeScript** for type safety

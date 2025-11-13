@@ -60,7 +60,9 @@ Should highlight strengths, point out specific areas for improvement, and guide 
 
 export const flashcardSetSchema = z.object({
   title: z.string().describe("The title of the flashcard set"),
-  summary: z.string().describe("A brief summary of what the flashcard set covers"),
+  summary: z
+    .string()
+    .describe("A brief summary of what the flashcard set covers"),
   flashcards: z
     .array(
       z.object({

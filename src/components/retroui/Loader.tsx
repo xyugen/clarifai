@@ -6,8 +6,7 @@ const loaderVariants = cva("flex gap-1", {
   variants: {
     variant: {
       default: "[&>div]:bg-primary [&>div]:border-black",
-      secondary:
-        "[&>div]:bg-secondary [&>div]:border-black",
+      secondary: "[&>div]:bg-secondary [&>div]:border-black",
       outline: "[&>div]:bg-transparent [&>div]:border-black",
     },
     size: {
@@ -55,7 +54,7 @@ const Loader = React.forwardRef<HTMLDivElement, LoaderProps>(
         {Array.from({ length: count }).map((_, i) => (
           <div
             key={i}
-            className="border-2 animate-bounce"
+            className="animate-bounce border-2"
             style={{
               animationDuration: `${duration}s`,
               animationIterationCount: "infinite",

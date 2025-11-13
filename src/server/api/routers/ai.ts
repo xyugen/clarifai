@@ -49,7 +49,7 @@ export const aiRouter = createTRPCRouter({
         session: { user },
       } = ctx;
       const numQuestions = numQuestionsRaw ?? 5;
-      
+
       // Check rate limit for AI generation
       await checkRateLimit(user.id, "ai:generate", RateLimits.AI_GENERATION);
 

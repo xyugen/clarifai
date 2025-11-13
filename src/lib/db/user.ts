@@ -43,17 +43,14 @@ export const getPublicTopicsForUser = async (userId: string) => {
     .from(topicTable)
     .leftJoin(questionTable, eq(questionTable.topicId, topicTable.id))
     .where(
-      and(
-        eq(topicTable.authorId, userId),
-        eq(topicTable.visibility, "public")
-      )
+      and(eq(topicTable.authorId, userId), eq(topicTable.visibility, "public")),
     )
     .groupBy(
       topicTable.id,
       topicTable.title,
       topicTable.summary,
       topicTable.visibility,
-      topicTable.createdAt
+      topicTable.createdAt,
     )
     .orderBy(desc(topicTable.createdAt))
     .execute();

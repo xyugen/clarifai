@@ -32,7 +32,9 @@ export const flashcardRouter = createTRPCRouter({
       // Try to get from cache first
       const cacheKey = `${CachePrefix.LESSON}flashcard:${flashcardSetId}`;
       const cached = await getCached<{
-        flashcardSet: Awaited<ReturnType<typeof getFlashcardSet>>["flashcardSet"];
+        flashcardSet: Awaited<
+          ReturnType<typeof getFlashcardSet>
+        >["flashcardSet"];
         flashcards: Awaited<ReturnType<typeof getFlashcardSet>>["flashcards"];
       }>(cacheKey);
 
@@ -65,11 +67,7 @@ export const flashcardRouter = createTRPCRouter({
       }
 
       // Cache the result
-      await setCached(
-        cacheKey,
-        { flashcardSet, flashcards },
-        CacheTTL.LESSON,
-      );
+      await setCached(cacheKey, { flashcardSet, flashcards }, CacheTTL.LESSON);
 
       return { flashcardSet, flashcards };
     }),
@@ -88,9 +86,10 @@ export const flashcardRouter = createTRPCRouter({
 
     // Try to get from cache first
     const cacheKey = `${CachePrefix.USER_TOPICS}flashcard:${user.id}:all`;
-    const cached = await getCached<
-      Awaited<ReturnType<typeof getFlashcardSetsForUser>>
-    >(cacheKey);
+    const cached =
+      await getCached<Awaited<ReturnType<typeof getFlashcardSetsForUser>>>(
+        cacheKey,
+      );
 
     if (cached) {
       return cached;

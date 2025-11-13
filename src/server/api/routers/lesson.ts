@@ -197,9 +197,8 @@ export const lessonRouter = createTRPCRouter({
 
     // Try to get from cache first
     const cacheKey = `${CachePrefix.USER_TOPICS}${user.id}:all`;
-    const cached = await getCached<
-      Awaited<ReturnType<typeof getTopicsForUser>>
-    >(cacheKey);
+    const cached =
+      await getCached<Awaited<ReturnType<typeof getTopicsForUser>>>(cacheKey);
 
     if (cached) {
       return cached;
@@ -263,9 +262,8 @@ export const lessonRouter = createTRPCRouter({
 
     // Try to get from cache first
     const cacheKey = `${CachePrefix.USER_STATS}${user.id}`;
-    const cached = await getCached<Awaited<ReturnType<typeof getUserStats>>>(
-      cacheKey,
-    );
+    const cached =
+      await getCached<Awaited<ReturnType<typeof getUserStats>>>(cacheKey);
 
     if (cached) {
       return cached;

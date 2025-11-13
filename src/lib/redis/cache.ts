@@ -80,9 +80,7 @@ export async function deleteCached(key: string): Promise<boolean> {
 /**
  * Delete multiple cached keys by pattern
  */
-export async function deleteCachedByPattern(
-  pattern: string,
-): Promise<boolean> {
+export async function deleteCachedByPattern(pattern: string): Promise<boolean> {
   const redis = getRedisClient();
   if (!redis) return false;
 
@@ -93,10 +91,7 @@ export async function deleteCachedByPattern(
     }
     return true;
   } catch (error) {
-    console.error(
-      `Error deleting cached data for pattern ${pattern}:`,
-      error,
-    );
+    console.error(`Error deleting cached data for pattern ${pattern}:`, error);
     return false;
   }
 }

@@ -5,12 +5,7 @@ import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { formatDate } from "date-fns";
-import {
-  ArrowRight,
-  BookOpen,
-  CreditCard,
-  FileText,
-} from "lucide-react";
+import { ArrowRight, BookOpen, CreditCard, FileText } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 
@@ -43,7 +38,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
   publicTopics,
   publicFlashcardSets,
 }) => {
-  const [activeTab, setActiveTab] = useState<"topics" | "flashcards">("flashcards");
+  const [activeTab, setActiveTab] = useState<"topics" | "flashcards">(
+    "flashcards",
+  );
 
   return (
     <div>
