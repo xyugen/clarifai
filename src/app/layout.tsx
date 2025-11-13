@@ -5,6 +5,7 @@ import { Archivo_Black, Space_Grotesk } from "next/font/google";
 
 import { Toaster } from "@/components/retroui/Sonner";
 import { TRPCReactProvider } from "@/trpc/react";
+import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
@@ -85,6 +86,7 @@ export default function RootLayout({
         <NextTopLoader color="#ffdb33" />
         <TRPCReactProvider>{children}</TRPCReactProvider>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
