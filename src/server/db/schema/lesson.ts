@@ -73,12 +73,40 @@ export const suggestions = createTable("suggestions", {
   suggestion: text("suggestion").notNull(),
 });
 
+export const flashcardSet = createTable("flashcard_set", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  authorId: text("authorId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  summary: text("summary"),
+  visibility: text("visibility", { enum: TOPIC_VISIBILITY })
+    .notNull()
+    .default("private"),
+  createdAt: integer("createdAt", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const flashcard = createTable("flashcard", {
+  id: text("id").primaryKey(),
+  flashcardSetId: text("flashcardSetId")
+    .notNull()
+    .references(() => flashcardSet.id, { onDelete: "cascade" }),
+  term: text("term").notNull(),
+  definition: text("definition").notNull(),
+});
+
 export type Topic = InferSelectModel<typeof topic>;
 export type Question = InferSelectModel<typeof question>;
 export type Answer = InferSelectModel<typeof answer>;
 export type Feedback = InferSelectModel<typeof feedback>;
 export type KeyPointMissed = InferSelectModel<typeof keyPointsMissed>;
 export type Suggestion = InferSelectModel<typeof suggestions>;
+export type FlashcardSet = InferSelectModel<typeof flashcardSet>;
+export type Flashcard = InferSelectModel<typeof flashcard>;
 
 export type InsertAnswer = InferInsertModel<typeof answer>;
 export type InsertFeedback = InferInsertModel<typeof feedback>;
+export type InsertFlashcardSet = InferInsertModel<typeof flashcardSet>;
+export type InsertFlashcard = InferInsertModel<typeof flashcard>;

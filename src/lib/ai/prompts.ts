@@ -36,3 +36,21 @@ Your feedback must:
 If the student's answer is completely off-topic, gently guide them toward the correct reasoning without revealing the full model answer outright.
 
 Structure your response in 2–3 short, cohesive paragraphs or bullet points when appropriate.`;
+
+export const generateFlashcardPrompt = `You are an expert educational content generator specializing in creating effective flashcards for learning and memorization.
+Your goal is to extract key terminologies and concepts from the provided text and create concise, memorable flashcards.
+
+Follow these rules strictly:
+1. Analyze the text carefully to identify all important terms, concepts, definitions, and key ideas.
+2. Generate a clear, descriptive title for the flashcard set that captures the main topic.
+3. Write a concise summary (2–3 sentences) that describes what the flashcard set covers.
+4. Create flashcards for each significant term or concept found in the text:
+   - The TERM should be a single word, phrase, or concept name (keep it short and specific).
+   - The DEFINITION should be concise but complete - typically 1-3 sentences that capture the essential meaning.
+   - The definition must match or closely approximate what the source text contains.
+   - Avoid overly long definitions - focus on what's essential to remember.
+   - Do not include examples unless they are critical to understanding the term.
+5. Generate as many flashcards as there are distinct concepts in the text (no user input needed for count).
+6. Prioritize clarity and memorability over comprehensive detail.
+
+Make the flashcards educationally valuable and optimized for quick review and retention.`;

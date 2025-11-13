@@ -10,4 +10,5 @@ export enum PageRoutes {
   STUDY = "/study",
   QUESTION = "/question",
   PROFILE = "/profile",
+  FLASHCARDS = "/flashcards",
 }

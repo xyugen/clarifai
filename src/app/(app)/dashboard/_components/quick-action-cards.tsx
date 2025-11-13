@@ -1,7 +1,7 @@
 "use client";
 
 import { PageRoutes } from "@/constants/page-routes";
-import { BookOpen, Upload } from "lucide-react";
+import { BookOpen, CreditCard, Upload } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import QuickActionCard from "./quick-action-card";
 
@@ -9,7 +9,7 @@ const QuickActionCards = () => {
   const router = useRouter();
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       <QuickActionCard
         icon={Upload}
         badgeText="NEW"
@@ -20,6 +20,19 @@ const QuickActionCards = () => {
         badgeColor="bg-pink-200"
         onClick={() => {
           router.push(PageRoutes.UPLOAD);
+        }}
+      />
+
+      <QuickActionCard
+        icon={CreditCard}
+        badgeText="STUDY"
+        title="FLASHCARDS"
+        description="Generate flashcards from PDF concepts and terms"
+        buttonText="CREATE FLASHCARDS"
+        bgColor="bg-purple-300"
+        badgeColor="bg-purple-200"
+        onClick={() => {
+          router.push(`${PageRoutes.FLASHCARDS}/upload`);
         }}
       />
 
@@ -44,6 +57,19 @@ const QuickActionCards = () => {
         badgeColor="bg-green-200"
         onClick={() => {
           router.push(PageRoutes.STUDY);
+        }}
+      />
+
+      <QuickActionCard
+        icon={CreditCard}
+        badgeText="LIBRARY"
+        title="MY FLASHCARDS"
+        description="Review and study your flashcard sets"
+        buttonText="VIEW ALL"
+        bgColor="bg-blue-300"
+        badgeColor="bg-blue-200"
+        onClick={() => {
+          router.push(PageRoutes.FLASHCARDS);
         }}
       />
     </div>

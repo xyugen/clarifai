@@ -1,4 +1,8 @@
-import { getPublicTopicsForUser, getUserById } from "@/lib/db";
+import {
+  getPublicFlashcardSetsForUser,
+  getPublicTopicsForUser,
+  getUserById,
+} from "@/lib/db";
 import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -14,10 +18,12 @@ export const userRouter = createTRPCRouter({
 
       const user = await getUserById(userId);
       const publicTopics = await getPublicTopicsForUser(userId);
+      const publicFlashcardSets = await getPublicFlashcardSetsForUser(userId);
 
       return {
         user,
         publicTopics,
+        publicFlashcardSets,
       };
     }),
 });
