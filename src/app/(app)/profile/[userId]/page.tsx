@@ -1,7 +1,7 @@
 import { api } from "@/trpc/server";
 import type { Metadata } from "next";
+import ProfileContent from "./_components/profile-content";
 import ProfileHeader from "./_components/profile-header";
-import PublicTopicsList from "./_components/public-topics-list";
 
 type Props = {
   params: Promise<{ userId: string }>;
@@ -24,14 +24,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const Page = async ({ params }: Props) => {
   const { userId } = await params;
-  const { user, publicTopics } = await api.user.getUserProfile({ userId });
+  const { user, publicTopics, publicFlashcardSets } =
+    await api.user.getUserProfile({ userId });
 
   return (
     <div className="min-h-screen bg-cyan-100">
-      <ProfileHeader user={user} topicCount={publicTopics.length} />
+      <ProfileHeader
+        user={user}
+        topicCount={publicTopics.length}
+        flashcardCount={publicFlashcardSets.length}
+      />
 
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <PublicTopicsList topics={publicTopics} userName={user.name} />
+        <ProfileContent
+          userName={user.name}
+          publicTopics={publicTopics}
+          publicFlashcardSets={publicFlashcardSets}
+        />
       </div>
     </div>
   );

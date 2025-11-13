@@ -1,7 +1,7 @@
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { formatDate } from "date-fns";
-import { BookOpen, Calendar } from "lucide-react";
+import { BookOpen, Calendar, CreditCard } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import ShareButton from "./share-button";
@@ -14,11 +14,13 @@ interface ProfileHeaderProps {
     createdAt: Date;
   };
   topicCount: number;
+  flashcardCount: number;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   user,
   topicCount,
+  flashcardCount,
 }: ProfileHeaderProps) => {
   return (
     <div className="border-b-2 border-black bg-white">
@@ -60,6 +62,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               <div className="flex items-center gap-2">
                 <BookOpen className="size-4" />
                 <span>{topicCount} Public Topics</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CreditCard className="size-4" />
+                <span>{flashcardCount} Public Flashcard Sets</span>
               </div>
             </div>
           </div>
