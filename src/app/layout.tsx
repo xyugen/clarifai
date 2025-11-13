@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     default: "ClarifAI",
   },
   description: "A web-based study companion powered by AI.",
+  authors: [{ name: "Renz Arias", url: "https://renzyx.is-a.dev" }],
   icons: [
     { rel: "icon", url: "/favicon.ico" },
     {
@@ -36,6 +37,29 @@ export const metadata: Metadata = {
       url: "/site.webmanifest",
     },
   ],
+  openGraph: {
+    title: "ClarifAI",
+    description: "A web-based study companion powered by AI.",
+    siteName: "ClarifAI",
+    locale: "en-US",
+    type: "website",
+    images: [{ url: "/og.png" }],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  twitter: {
+    title: "ClarifAI",
+    card: "summary_large_image",
+  },
 };
 
 const archivoBlack = Archivo_Black({
