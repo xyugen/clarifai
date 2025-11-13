@@ -57,3 +57,21 @@ Should highlight strengths, point out specific areas for improvement, and guide 
       "An brief analysis note if the student's answer is inappropriate,. off-topic, or cannot be evaluated.",
     ),
 });
+
+export const flashcardSetSchema = z.object({
+  title: z.string().describe("The title of the flashcard set"),
+  summary: z.string().describe("A brief summary of what the flashcard set covers"),
+  flashcards: z
+    .array(
+      z.object({
+        term: z.string().describe("The term or concept (short and specific)"),
+        definition: z
+          .string()
+          .describe(
+            "A concise definition or explanation (1-3 sentences, essential information only)",
+          ),
+      }),
+    )
+    .min(1)
+    .describe("A list of flashcards with terms and definitions"),
+});
