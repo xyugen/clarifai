@@ -1,9 +1,9 @@
+import { PageRoutes } from "@/constants/page-routes";
 import { auth } from "@/server/better-auth";
 import { api } from "@/trpc/server";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { PageRoutes } from "@/constants/page-routes";
-import type { Metadata } from "next";
 import FlashcardStudy from "./_components/flashcard-study";
 
 type Props = {
@@ -42,12 +42,9 @@ const Page = async ({ params }: Props) => {
   });
 
   return (
-    <div className="min-h-screen bg-blue-300">
+    <div className="min-h-screen bg-blue-100">
       <div className="mx-auto max-w-5xl px-4 py-8">
-        <FlashcardStudy
-          flashcardSet={flashcardSet}
-          flashcards={flashcards}
-        />
+        <FlashcardStudy flashcardSet={flashcardSet} flashcards={flashcards} />
       </div>
     </div>
   );

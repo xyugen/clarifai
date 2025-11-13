@@ -25,7 +25,7 @@ const Page = async () => {
   const flashcardSets = await api.flashcard.getFlashcardSetsForUser();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100">
+    <div className="min-h-screen bg-linear-to-br from-purple-100 to-pink-100">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>

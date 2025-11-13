@@ -63,7 +63,7 @@ const FlashcardPrivacyButton: React.FC<FlashcardPrivacyButtonProps> = ({
           <Button
             size={"sm"}
             variant={"outline"}
-            className="bg-background flex items-center gap-2"
+            className="bg-background flex h-8 items-center gap-2"
             disabled={updateVisibilityMutation.isPending}
           >
             <Lock className="size-4" strokeWidth={3} />

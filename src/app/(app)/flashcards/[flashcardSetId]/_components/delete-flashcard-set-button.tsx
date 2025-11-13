@@ -63,7 +63,7 @@ const DeleteFlashcardSetButton: React.FC<DeleteFlashcardSetButtonProps> = ({
           )}
           size="sm"
         >
-          <Trash className="size-4" />
+          <Trash className="size-4" strokeWidth={3} />
           {showLabel && <span>Delete</span>}
         </Button>
       </Dialog.Trigger>
