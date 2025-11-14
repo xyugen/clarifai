@@ -92,6 +92,15 @@ const FlashcardStudy = ({ flashcardSet, flashcards }: FlashcardStudyProps) => {
 
   return (
     <div className="space-y-6" onKeyDown={handleKeyPress} tabIndex={0}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="bg-background sm:hidden"
+        onClick={() => router.push(PageRoutes.FLASHCARDS)}
+      >
+        <ArrowLeft className="mr-2 size-4" strokeWidth={3} />
+        BACK
+      </Button>
       {/* Compact Header */}
       <div className="border-2 border-black bg-white">
         <div className="mx-auto max-w-5xl px-4 py-4">
@@ -99,14 +108,14 @@ const FlashcardStudy = ({ flashcardSet, flashcards }: FlashcardStudyProps) => {
             <Button
               variant="outline"
               size="sm"
-              className="bg-background"
+              className="bg-background hidden sm:inline-flex"
               onClick={() => router.push(PageRoutes.FLASHCARDS)}
             >
               <ArrowLeft className="mr-2 size-4" strokeWidth={3} />
               BACK
             </Button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-2">
               <Menu>
                 <Menu.Trigger asChild>
                   <Button
