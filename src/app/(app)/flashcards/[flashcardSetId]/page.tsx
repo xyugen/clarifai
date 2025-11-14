@@ -1,8 +1,7 @@
 import { PageRoutes } from "@/constants/page-routes";
-import { auth } from "@/server/better-auth";
+import { getSession } from "@/server/better-auth/server";
 import { api } from "@/trpc/server";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import FlashcardStudy from "./_components/flashcard-study";
 
@@ -28,6 +27,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const Page = async ({ params }: Props) => {
+  const session = await getSession();
+
+  if (!session) {
+    redirect(PageRoutes.LOGIN);
+  }
+
+  const userId = session.user.id;
+
   const { flashcardSetId } = await params;
   const { flashcardSet, flashcards } = await api.flashcard.getFlashcardSet({
     flashcardSetId,
@@ -36,7 +43,11 @@ const Page = async ({ params }: Props) => {
   return (
     <div className="min-h-screen bg-blue-100">
       <div className="mx-auto max-w-5xl px-4 py-8">
-        <FlashcardStudy flashcardSet={flashcardSet} flashcards={flashcards} />
+        <FlashcardStudy
+          userId={userId}
+          flashcardSet={flashcardSet}
+          flashcards={flashcards}
+        />
       </div>
     </div>
   );
