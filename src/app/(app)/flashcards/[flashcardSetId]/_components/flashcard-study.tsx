@@ -37,11 +37,16 @@ type FlashcardType = {
 };
 
 interface FlashcardStudyProps {
+  userId: string;
   flashcardSet: FlashcardSetType;
   flashcards: FlashcardType[];
 }
 
-const FlashcardStudy = ({ flashcardSet, flashcards }: FlashcardStudyProps) => {
+const FlashcardStudy = ({
+  userId,
+  flashcardSet,
+  flashcards,
+}: FlashcardStudyProps) => {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -148,7 +153,10 @@ const FlashcardStudy = ({ flashcardSet, flashcards }: FlashcardStudyProps) => {
                 </Menu.Content>
               </Menu>
 
-              <FlashcardPrivacyButton flashcardSetId={flashcardSet.id} />
+              {userId === flashcardSet.authorId && (
+                <FlashcardPrivacyButton flashcardSetId={flashcardSet.id} />
+              )}
+
               <DeleteFlashcardSetButton
                 flashcardSetId={flashcardSet.id}
                 redirectUrl={PageRoutes.FLASHCARDS}
