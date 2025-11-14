@@ -90,12 +90,14 @@ const FlashcardPrivacyButton: React.FC<FlashcardPrivacyButtonProps> = ({
         </Menu.Content>
       </Menu>
       {flashcardSetVisibility.data === "public" && (
-        <button
-          className="ml-4 inline-flex items-center gap-2 text-sm text-blue-600 hover:cursor-pointer"
+        <Button
+          variant={"outline"}
+          size={"sm"}
+          className="text-foreground inline-flex h-8 items-center gap-2 text-sm hover:cursor-pointer"
           onClick={handleShareClick}
         >
-          <Share2 className="size-6" />
-        </button>
+          <Share2 className="size-4" strokeWidth={3} />
+        </Button>
       )}
     </>
   );
