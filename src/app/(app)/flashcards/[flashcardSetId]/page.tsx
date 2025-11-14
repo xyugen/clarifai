@@ -28,14 +28,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const Page = async ({ params }: Props) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect(PageRoutes.LOGIN);
-  }
-
   const { flashcardSetId } = await params;
   const { flashcardSet, flashcards } = await api.flashcard.getFlashcardSet({
     flashcardSetId,
