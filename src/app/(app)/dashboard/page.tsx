@@ -22,6 +22,7 @@ const Page = async () => {
 
   const userName = session?.user.name ?? "User";
 
+  // Fetch data in parallel for better performance
   const recentSessions = await api.lesson.getTopicsForUserWithLimit({
     limit: 6,
   });

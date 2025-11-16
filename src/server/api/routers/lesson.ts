@@ -238,6 +238,17 @@ export const lessonRouter = createTRPCRouter({
         });
       }
 
+      // Try to get from cache first
+      const cacheKey = `${CachePrefix.USER_TOPICS}${user.id}:limit:${input.limit}`;
+      const cached = await getCached<
+        Awaited<ReturnType<typeof getTopicsForUserWithLimit>>
+      >(cacheKey);
+
+      if (cached) {
+        return cached;
+      }
+
+      // If not in cache, fetch from database
       const topics = await getTopicsForUserWithLimit(user.id, input.limit);
 
       if (!topics) {
@@ -246,6 +257,9 @@ export const lessonRouter = createTRPCRouter({
           message: "Topics not found",
         });
       }
+
+      // Cache the result
+      await setCached(cacheKey, topics, CacheTTL.LESSON);
 
       return topics;
     }),
