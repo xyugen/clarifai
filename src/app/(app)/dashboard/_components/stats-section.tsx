@@ -1,10 +1,17 @@
-import { api } from "@/trpc/server";
 import { BookOpen, NotebookPen, Target, Zap } from "lucide-react";
+import type React from "react";
 import StatsCard from "./stats-card";
 
-const StatsSection = async () => {
-  const stats = await api.lesson.getUserStats();
+interface StatsSectionProps {
+  stats: {
+    sessions: number;
+    answeredCount: number;
+    streak: number;
+    clarity: number;
+  };
+}
 
+const StatsSection: React.FC<StatsSectionProps> = async ({ stats }) => {
   return (
     <section className="mb-8">
       <h2 className="mb-4 text-3xl font-black">YOUR STATS</h2>

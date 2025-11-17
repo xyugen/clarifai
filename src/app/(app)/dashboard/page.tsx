@@ -20,11 +20,14 @@ const Page = async () => {
     redirect(PageRoutes.LOGIN);
   }
 
-  const userName = session?.user.name ?? "User";
+  const userName = session.user.name;
 
-  const recentSessions = await api.lesson.getTopicsForUserWithLimit({
-    limit: 6,
-  });
+  const [recentSessions, stats] = await Promise.all([
+    api.lesson.getTopicsForUserWithLimit({
+      limit: 6,
+    }),
+    api.lesson.getUserStats(),
+  ]);
 
   const hasSessions = recentSessions.length > 0;
 
@@ -35,7 +38,7 @@ const Page = async () => {
         <QuickActionCards />
       </section>
 
-      <StatsSection />
+      <StatsSection stats={stats} />
 
       {recentSessions.length > 0 && (
         <>

@@ -375,62 +375,46 @@ export const getFeedbackForAnswer = async (answerId: string) => {
 };
 
 export const getTopicsForUser = async (userId: string) => {
-  const topics = await db
+  // Get topics with their question counts in a single query using a subquery
+  const topicsWithQuestionCounts = await db
     .select({
       id: topicTable.id,
       title: topicTable.title,
       lastActivity: topicTable.createdAt,
+      totalQuestions: count(questionTable.id),
+      answeredCount: countDistinct(answerTable.id),
     })
     .from(topicTable)
+    .leftJoin(questionTable, eq(questionTable.topicId, topicTable.id))
+    .leftJoin(
+      answerTable,
+      and(
+        eq(answerTable.questionId, questionTable.id),
+        eq(answerTable.authorId, userId),
+      ),
+    )
+    .groupBy(topicTable.id)
     .where(eq(topicTable.authorId, userId))
     .execute();
 
-  const progressData = await Promise.all(
-    topics.map(async (session) => {
-      const [totalQuestionsData] = await db
-        .select({ totalQuestions: count(questionTable.id) })
-        .from(questionTable)
-        .where(eq(questionTable.topicId, session.id))
-        .execute();
+  // Calculate progress for each topic
+  const progressData = topicsWithQuestionCounts.map((session) => {
+    const totalQuestions = Number(session.totalQuestions ?? 0);
+    const answeredCount = Number(session.answeredCount ?? 0);
+    const progress =
+      totalQuestions > 0
+        ? Math.round((answeredCount / totalQuestions) * 100)
+        : 0;
 
-      const [answeredCountData] = await db
-        .select({
-          answeredCount: countDistinct(answerTable.questionId),
-        })
-        .from(answerTable)
-        .innerJoin(questionTable, eq(answerTable.questionId, questionTable.id))
-        .where(
-          and(
-            eq(questionTable.topicId, session.id),
-            eq(answerTable.authorId, userId),
-          ),
-        )
-        .execute();
-
-      if (!totalQuestionsData) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to retrieve total questions",
-        });
-      }
-
-      // If answeredCountData is missing, fallback to 0
-      const answeredCount = Number(answeredCountData?.answeredCount ?? 0);
-      const totalQuestions = Number(totalQuestionsData.totalQuestions ?? 0);
-
-      const progress =
-        totalQuestions > 0
-          ? Math.round((answeredCount / totalQuestions) * 100)
-          : 0;
-
-      return {
-        ...session,
-        totalQuestions,
-        answeredCount,
-        progress,
-      };
-    }),
-  );
+    return {
+      id: session.id,
+      title: session.title,
+      lastActivity: session.lastActivity,
+      totalQuestions,
+      answeredCount,
+      progress,
+    };
+  });
 
   return progressData;
 };
@@ -439,68 +423,54 @@ export const getTopicsForUserWithLimit = async (
   userId: string,
   limit: number,
 ) => {
-  const topics = await db
+  // Get topics with their question counts in a single query using a subquery
+  const topicsWithQuestionCounts = await db
     .select({
       id: topicTable.id,
       title: topicTable.title,
       lastActivity: topicTable.createdAt,
+      totalQuestions: count(questionTable.id),
+      answeredCount: countDistinct(answerTable.id),
     })
     .from(topicTable)
-    .where(eq(topicTable.authorId, userId))
+    .leftJoin(questionTable, eq(questionTable.topicId, topicTable.id))
+    .leftJoin(
+      answerTable,
+      and(
+        eq(answerTable.questionId, questionTable.id),
+        eq(answerTable.authorId, userId),
+      ),
+    )
+    .groupBy(topicTable.id)
     .limit(limit)
+    .where(eq(topicTable.authorId, userId))
     .execute();
 
-  const progressData = await Promise.all(
-    topics.map(async (session) => {
-      const [totalQuestionsData] = await db
-        .select({ totalQuestions: count(questionTable.id) })
-        .from(questionTable)
-        .where(eq(questionTable.topicId, session.id))
-        .execute();
+  // Calculate progress for each topic
+  const progressData = topicsWithQuestionCounts.map((session) => {
+    const totalQuestions = Number(session.totalQuestions ?? 0);
+    const answeredCount = Number(session.answeredCount ?? 0);
 
-      const [answeredCountData] = await db
-        .select({
-          answeredCount: countDistinct(answerTable.questionId),
-        })
-        .from(answerTable)
-        .innerJoin(questionTable, eq(answerTable.questionId, questionTable.id))
-        .where(
-          and(
-            eq(questionTable.topicId, session.id),
-            eq(answerTable.authorId, userId),
-          ),
-        )
-        .execute();
+    const progress =
+      totalQuestions > 0
+        ? Math.round((answeredCount / totalQuestions) * 100)
+        : 0;
 
-      if (!totalQuestionsData) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to retrieve total questions",
-        });
-      }
-
-      // If answeredCountData is missing, fallback to 0
-      const answeredCount = Number(answeredCountData?.answeredCount ?? 0);
-      const totalQuestions = Number(totalQuestionsData.totalQuestions ?? 0);
-
-      const progress =
-        totalQuestions > 0
-          ? Math.round((answeredCount / totalQuestions) * 100)
-          : 0;
-
-      return {
-        ...session,
-        totalQuestions,
-        answeredCount,
-        progress,
-      };
-    }),
-  );
+    return {
+      id: session.id,
+      title: session.title,
+      lastActivity: session.lastActivity,
+      totalQuestions,
+      answeredCount,
+      progress,
+    };
+  });
 
   return progressData;
 };
 
 export const getUserStats = async (userId: string) => {
+  // Combine session count and answered count into one query
   const [sessionsData] = await db
     .select({ sessions: countDistinct(topicTable.id) })
     .from(topicTable)
@@ -515,15 +485,26 @@ export const getUserStats = async (userId: string) => {
     .where(eq(answerTable.authorId, userId))
     .execute();
 
-  const answerDates = await db
-    .select({
-      date: answerTable.createdAt,
-    })
-    .from(answerTable)
-    .where(eq(answerTable.authorId, userId))
-    .groupBy(answerTable.createdAt)
-    .orderBy(desc(answerTable.createdAt))
-    .execute();
+  // Get answer dates for streak calculation and clarity in parallel
+  const [answerDates, clarityData] = await Promise.all([
+    db
+      .select({
+        date: answerTable.createdAt,
+      })
+      .from(answerTable)
+      .where(eq(answerTable.authorId, userId))
+      .groupBy(answerTable.createdAt)
+      .orderBy(desc(answerTable.createdAt))
+      .execute(),
+    db
+      .select({
+        avgClarity: avg(feedbackTable.clarityScore),
+      })
+      .from(feedbackTable)
+      .innerJoin(answerTable, eq(feedbackTable.answerId, answerTable.id))
+      .where(eq(answerTable.authorId, userId))
+      .execute(),
+  ]);
 
   let streak = 0;
   if (answerDates.length > 0) {
@@ -553,18 +534,11 @@ export const getUserStats = async (userId: string) => {
     }
   }
 
-  const [clarityData] = await db
-    .select({
-      avgClarity: avg(feedbackTable.clarityScore),
-    })
-    .from(feedbackTable)
-    .innerJoin(answerTable, eq(feedbackTable.answerId, answerTable.id))
-    .where(eq(answerTable.authorId, userId))
-    .execute();
-
-  const clarity = clarityData?.avgClarity
-    ? Math.round(Number(clarityData.avgClarity))
-    : 0;
+  const clarity =
+    clarityData[0]?.avgClarity !== null &&
+    clarityData[0]?.avgClarity !== undefined
+      ? Math.round(Number(clarityData[0].avgClarity))
+      : 0;
 
   return {
     sessions: Number(sessionsData?.sessions ?? 0),
