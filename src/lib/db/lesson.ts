@@ -11,7 +11,7 @@ import {
   type InsertFeedback,
 } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { and, avg, count, countDistinct, desc, eq, sql } from "drizzle-orm";
+import { and, avg, count, countDistinct, desc, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 export const saveLesson = async ({
@@ -381,20 +381,19 @@ export const getTopicsForUser = async (userId: string) => {
       id: topicTable.id,
       title: topicTable.title,
       lastActivity: topicTable.createdAt,
-      totalQuestions: sql<number>`(
-        SELECT COUNT(${questionTable.id})
-        FROM ${questionTable}
-        WHERE ${questionTable.topicId} = ${topicTable.id}
-      )`,
-      answeredCount: sql<number>`(
-        SELECT COUNT(DISTINCT ${answerTable.questionId})
-        FROM ${answerTable}
-        INNER JOIN ${questionTable} ON ${answerTable.questionId} = ${questionTable.id}
-        WHERE ${questionTable.topicId} = ${topicTable.id}
-          AND ${answerTable.authorId} = ${userId}
-      )`,
+      totalQuestions: count(questionTable.id),
+      answeredCount: countDistinct(answerTable.id),
     })
     .from(topicTable)
+    .leftJoin(questionTable, eq(questionTable.topicId, topicTable.id))
+    .leftJoin(
+      answerTable,
+      and(
+        eq(answerTable.questionId, questionTable.id),
+        eq(answerTable.authorId, userId),
+      ),
+    )
+    .groupBy(topicTable.id)
     .where(eq(topicTable.authorId, userId))
     .execute();
 
@@ -402,7 +401,6 @@ export const getTopicsForUser = async (userId: string) => {
   const progressData = topicsWithQuestionCounts.map((session) => {
     const totalQuestions = Number(session.totalQuestions ?? 0);
     const answeredCount = Number(session.answeredCount ?? 0);
-
     const progress =
       totalQuestions > 0
         ? Math.round((answeredCount / totalQuestions) * 100)
@@ -431,22 +429,21 @@ export const getTopicsForUserWithLimit = async (
       id: topicTable.id,
       title: topicTable.title,
       lastActivity: topicTable.createdAt,
-      totalQuestions: sql<number>`(
-        SELECT COUNT(${questionTable.id})
-        FROM ${questionTable}
-        WHERE ${questionTable.topicId} = ${topicTable.id}
-      )`,
-      answeredCount: sql<number>`(
-        SELECT COUNT(DISTINCT ${answerTable.questionId})
-        FROM ${answerTable}
-        INNER JOIN ${questionTable} ON ${answerTable.questionId} = ${questionTable.id}
-        WHERE ${questionTable.topicId} = ${topicTable.id}
-          AND ${answerTable.authorId} = ${userId}
-      )`,
+      totalQuestions: count(questionTable.id),
+      answeredCount: countDistinct(answerTable.id),
     })
     .from(topicTable)
-    .where(eq(topicTable.authorId, userId))
+    .leftJoin(questionTable, eq(questionTable.topicId, topicTable.id))
+    .leftJoin(
+      answerTable,
+      and(
+        eq(answerTable.questionId, questionTable.id),
+        eq(answerTable.authorId, userId),
+      ),
+    )
+    .groupBy(topicTable.id)
     .limit(limit)
+    .where(eq(topicTable.authorId, userId))
     .execute();
 
   // Calculate progress for each topic
@@ -538,7 +535,8 @@ export const getUserStats = async (userId: string) => {
   }
 
   const clarity =
-    clarityData[0]?.avgClarity !== null && clarityData[0]?.avgClarity !== undefined
+    clarityData[0]?.avgClarity !== null &&
+    clarityData[0]?.avgClarity !== undefined
       ? Math.round(Number(clarityData[0].avgClarity))
       : 0;
 
