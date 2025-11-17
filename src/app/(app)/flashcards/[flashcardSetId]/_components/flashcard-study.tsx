@@ -50,22 +50,27 @@ const FlashcardStudy = ({
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [showTermFirst, setShowTermFirst] = useState(true);
+  const [showTermFirst, setShowTermFirst] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const currentFlashcard = flashcards[currentIndex];
   const progress = ((currentIndex + 1) / flashcards.length) * 100;
 
   const handleNext = () => {
     if (currentIndex < flashcards.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setIsTransitioning(true);
       setIsFlipped(false);
+      setCurrentIndex(currentIndex + 1);
+      setTimeout(() => setIsTransitioning(false), 50);
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      setIsTransitioning(true);
       setIsFlipped(false);
+      setCurrentIndex(currentIndex - 1);
+      setTimeout(() => setIsTransitioning(false), 50);
     }
   };
 
@@ -134,21 +139,21 @@ const FlashcardStudy = ({
                 <Menu.Content align="start" className="w-52">
                   <Menu.Item
                     onSelect={() => {
-                      setShowTermFirst(true);
-                      setIsFlipped(false);
-                    }}
-                  >
-                    {showTermFirst && <Check className="mr-2 size-4" />}Show
-                    Term First
-                  </Menu.Item>
-                  <Menu.Item
-                    onSelect={() => {
                       setShowTermFirst(false);
                       setIsFlipped(false);
                     }}
                   >
                     {!showTermFirst && <Check className="mr-2 size-4" />}Show
                     Definition First
+                  </Menu.Item>
+                  <Menu.Item
+                    onSelect={() => {
+                      setShowTermFirst(true);
+                      setIsFlipped(false);
+                    }}
+                  >
+                    {showTermFirst && <Check className="mr-2 size-4" />}Show
+                    Term First
                   </Menu.Item>
                 </Menu.Content>
               </Menu>
@@ -203,9 +208,9 @@ const FlashcardStudy = ({
           style={{ height: "500px" }}
         >
           <div
-            className={`transform-style-3d relative h-full w-full cursor-pointer transition-transform duration-500 ${
-              isFlipped ? "rotate-y-180" : ""
-            }`}
+            className={`transform-style-3d relative h-full w-full cursor-pointer ${
+              isTransitioning ? "" : "transition-transform duration-500"
+            } ${isFlipped ? "rotate-y-180" : ""}`}
             onClick={handleFlip}
             role="button"
             aria-label={`Flashcard ${currentIndex + 1} of ${flashcards.length}. Click to flip. ${isFlipped ? "Showing back" : "Showing front"}`}
