@@ -12,9 +12,9 @@ const QuickActionCards = () => {
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       <QuickActionCard
         icon={Upload}
-        badgeText="NEW"
-        title="UPLOAD FILE"
-        description="Start a new lesson with AI-generated questions"
+        badgeText="AI"
+        title="GENERATE QUESTIONS"
+        description="Upload a PDF and get AI-generated comprehension questions"
         buttonText="UPLOAD PDF"
         bgColor="bg-pink-300"
         badgeColor="bg-pink-200"
@@ -25,10 +25,10 @@ const QuickActionCards = () => {
 
       <QuickActionCard
         icon={CreditCard}
-        badgeText="STUDY"
-        title="FLASHCARDS"
-        description="Generate flashcards from PDF concepts and terms"
-        buttonText="CREATE FLASHCARDS"
+        badgeText="AI"
+        title="GENERATE FLASHCARDS"
+        description="Turn PDF concepts into study flashcards with AI"
+        buttonText="UPLOAD PDF"
         bgColor="bg-purple-300"
         badgeColor="bg-purple-200"
         onClick={() => {
@@ -36,22 +36,11 @@ const QuickActionCards = () => {
         }}
       />
 
-      {/*<QuickActionCard
-        icon={Brain}
-        badgeText="AI"
-        title="FEYNMAN MODE"
-        description="Explain concepts in your own words"
-        buttonText="TRY NOW"
-        bgColor="bg-blue-300"
-        badgeColor="bg-blue-200"
-        onClick={() => console.log("Feynman Mode clicked")}
-      />*/}
-
       <QuickActionCard
         icon={BookOpen}
         badgeText="LIBRARY"
-        title="PAST LESSONS"
-        description="Review and continue previous sessions"
+        title="MY TOPICS"
+        description="Review and continue your active study topics"
         buttonText="VIEW ALL"
         bgColor="bg-green-300"
         badgeColor="bg-green-200"
@@ -64,7 +53,7 @@ const QuickActionCards = () => {
         icon={CreditCard}
         badgeText="LIBRARY"
         title="MY FLASHCARDS"
-        description="Review and study your flashcard sets"
+        description="Study and review your flashcard sets"
         buttonText="VIEW ALL"
         bgColor="bg-blue-300"
         badgeColor="bg-blue-200"
