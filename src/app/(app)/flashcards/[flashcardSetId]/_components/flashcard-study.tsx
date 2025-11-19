@@ -14,6 +14,7 @@ import {
   CreditCard,
   RotateCw,
   Settings,
+  Shuffle,
 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import React, { useState } from "react";
@@ -30,19 +31,21 @@ interface FlashcardStudyProps {
 const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
   userId,
   flashcardSet,
-  flashcards,
+  flashcards: initialFlashcards,
 }) => {
   const router = useRouter();
+  const [currentFlashcards, setCurrentFlashcards] =
+    useState<Flashcard[]>(initialFlashcards);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showTermFirst, setShowTermFirst] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const currentFlashcard = flashcards[currentIndex];
-  const progress = ((currentIndex + 1) / flashcards.length) * 100;
+  const currentFlashcard = currentFlashcards[currentIndex];
+  const progress = ((currentIndex + 1) / currentFlashcards.length) * 100;
 
   const handleNext = () => {
-    if (currentIndex < flashcards.length - 1) {
+    if (currentIndex < currentFlashcards.length - 1) {
       setIsTransitioning(true);
       setIsFlipped(false);
       setCurrentIndex(currentIndex + 1);
@@ -70,6 +73,22 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
       e.preventDefault();
       handleFlip();
     }
+  };
+
+  const shuffleFlashcards = () => {
+    const shuffled = [...initialFlashcards];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = shuffled[i];
+      const itemJ = shuffled[j];
+      if (temp !== undefined && itemJ !== undefined) {
+        shuffled[i] = itemJ;
+        shuffled[j] = temp;
+      }
+    }
+    setCurrentFlashcards(shuffled);
+    setCurrentIndex(0);
+    setIsFlipped(false);
   };
 
   if (!currentFlashcard) {
@@ -140,6 +159,11 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
                     {showTermFirst && <Check className="mr-2 size-4" />}Show
                     Term First
                   </Menu.Item>
+                  <div className="border-t" />
+                  <Menu.Item onSelect={shuffleFlashcards}>
+                    <Shuffle className="mr-2 size-4" />
+                    Shuffle Flashcards
+                  </Menu.Item>
                 </Menu.Content>
               </Menu>
 
@@ -173,7 +197,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
                 Progress
               </Text>
               <Text as="p" className="text-sm">
-                {currentIndex + 1} / {flashcards.length}
+                {currentIndex + 1} / {currentFlashcards.length}
               </Text>
             </div>
             <div className="h-3 border-2 border-black bg-gray-200">
@@ -198,7 +222,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
             } ${isFlipped ? "rotate-y-180" : ""}`}
             onClick={handleFlip}
             role="button"
-            aria-label={`Flashcard ${currentIndex + 1} of ${flashcards.length}. Click to flip. ${isFlipped ? "Showing back" : "Showing front"}`}
+            aria-label={`Flashcard ${currentIndex + 1} of ${currentFlashcards.length}. Click to flip. ${isFlipped ? "Showing back" : "Showing front"}`}
             tabIndex={0}
             style={{
               transformStyle: "preserve-3d",
@@ -314,7 +338,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
             variant="outline"
             size="md"
             onClick={handleNext}
-            disabled={currentIndex === flashcards.length - 1}
+            disabled={currentIndex === currentFlashcards.length - 1}
             className="bg-background disabled:cursor-not-allowed disabled:opacity-30 sm:w-full"
             aria-label="Next flashcard"
           >
@@ -330,9 +354,9 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
           </Text>
         </div>
       </div>
-      <div>
+      <div className="mt-20">
         <FlashcardView
-          flashcards={flashcards}
+          flashcards={currentFlashcards}
           currentIndex={currentIndex}
           onCardClick={(index) => {
             setCurrentIndex(index);
