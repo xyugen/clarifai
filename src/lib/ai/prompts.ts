@@ -57,7 +57,7 @@ export const generateFlashcardUserPrompt = (textContent: string) => {
 * Focus on functional explanation, purpose, or characteristics
 * Avoid overly long definitions - focus on what is essential to remember
 * Do not include examples unless they are critical to understanding
-- The definition must match or closely approximate what the source text contains.
+- IMPORTANT: The term and definition must match or closely approximate what the source text contains. No more, no less.
 5. Generate as many flashcards as there are distinct concepts in the text (no user input needed for count).
 6. Prioritize clarity and memorability over comprehensive detail.
 
