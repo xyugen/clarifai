@@ -30,19 +30,19 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
   }
 
   return (
-    <div>
-      <div className="mb-5">
+    <div className="relative">
+      <div className="mb-2">
         <Text as="h2">Flashcards ({flashcards.length})</Text>
       </div>
-      <div className="mb-5 flex items-center justify-center gap-2 *:hover:bg-amber-500">
+      <div className="sticky top-22 z-10 mb-5 flex items-center justify-center gap-2 *:hover:bg-amber-500">
         <Button
-          className="bg-purple-500 px-4 py-2 text-white"
+          className="bg-purple-500 px-2 py-1 text-sm text-white"
           onClick={() => setHideTerm(!hideTerm)}
         >
           {hideTerm ? "Show Term" : "Hide Term"}
         </Button>
         <Button
-          className="bg-pink-400 px-4 py-2 text-white"
+          className="bg-pink-400 px-2 py-1 text-sm text-white"
           onClick={() => setHideDefinition(!hideDefinition)}
         >
           {hideDefinition ? "Show Definition" : "Hide Definition"}
@@ -59,7 +59,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
             )}
             onClick={() => onCardClick?.(index)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 onCardClick?.(index);
               }
@@ -82,18 +82,22 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
                 <div>
                   <Text className="mb-1 text-lg uppercase">Term</Text>
                   <Text
-                    className={cn("text-2xl transition", hideTerm && "blur-sm")}
+                    className={cn(
+                      "text-2xl wrap-break-word transition",
+                      hideTerm && "blur-sm",
+                    )}
                   >
                     {flashcard.term}
                   </Text>
                 </div>
-                <div className="border-t" />
+                <div className="max-w-full border-t" />
                 <div className="space-y-4">
-                  <Text className="mb-1 text-lg uppercase">
-                    Definition
-                  </Text>
+                  <Text className="mb-1 text-lg uppercase">Definition</Text>
                   <Text
-                    className={cn("text-2xl transition", hideDefinition && "blur-sm")}
+                    className={cn(
+                      "text-2xl wrap-break-word transition",
+                      hideDefinition && "blur-sm",
+                    )}
                   >
                     {flashcard.definition}
                   </Text>

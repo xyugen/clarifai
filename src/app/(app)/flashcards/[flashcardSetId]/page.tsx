@@ -29,13 +29,14 @@ const Page = async ({ params }: Props) => {
   const userId = session?.user?.id ?? null;
 
   const { flashcardSetId } = await params;
-  const { flashcardSet, flashcards } = await api.flashcard.getFlashcardSetPublic({
-    flashcardSetId,
-  });
+  const { flashcardSet, flashcards } =
+    await api.flashcard.getFlashcardSetPublic({
+      flashcardSetId,
+    });
 
   return (
     <div className="min-h-screen bg-blue-100">
-      <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-5xl px-2 py-4 sm:px-4 sm:py-8">
         <FlashcardStudy
           userId={userId}
           flashcardSet={flashcardSet}

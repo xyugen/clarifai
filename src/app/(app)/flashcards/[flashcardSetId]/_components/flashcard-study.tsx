@@ -252,7 +252,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
 
               {/* Main Content */}
               <div className="flex w-full flex-1 items-center justify-center">
-                <Text className="max-w-3xl text-center text-3xl leading-tight md:text-4xl">
+                <Text className="max-w-3xl text-center text-3xl leading-tight wrap-break-word md:text-4xl">
                   {showTermFirst
                     ? currentFlashcard.term
                     : currentFlashcard.definition}
@@ -290,7 +290,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
 
               {/* Main Content */}
               <div className="flex w-full flex-1 items-center justify-center">
-                <Text className="max-w-3xl text-center text-3xl leading-relaxed md:text-4xl">
+                <Text className="max-w-3xl text-center text-3xl leading-relaxed wrap-break-word md:text-4xl">
                   {showTermFirst
                     ? currentFlashcard.definition
                     : currentFlashcard.term}
