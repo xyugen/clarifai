@@ -4,10 +4,10 @@ import {
   getUserById,
 } from "@/lib/db";
 import z from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
-  getUserProfile: protectedProcedure
+  getUserProfile: publicProcedure
     .input(
       z.object({
         userId: z.string(),
