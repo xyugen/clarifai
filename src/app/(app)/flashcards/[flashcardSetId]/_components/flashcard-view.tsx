@@ -18,7 +18,17 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
   onCardClick,
 }) => {
   const [hideTerm, setHideTerm] = useState(false);
-  const [hideDef, setHideDef] = useState(false);
+  const [hideDefinition, setHideDefinition] = useState(false);
+
+  if (flashcards.length === 0) {
+    return (
+      <div>
+        <Text as="h2">Flashcards (0)</Text>
+        <Text className="mt-4 text-gray-500">No flashcards to display</Text>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mb-5">
@@ -33,9 +43,9 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
         </Button>
         <Button
           className="bg-pink-400 px-4 py-2 text-white"
-          onClick={() => setHideDef(!hideDef)}
+          onClick={() => setHideDefinition(!hideDefinition)}
         >
-          {hideDef ? "Show Definition" : "Hide Definition"}
+          {hideDefinition ? "Show Definition" : "Hide Definition"}
         </Button>
       </div>
 
@@ -48,6 +58,15 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
               currentIndex === index && "ring-4 ring-purple-400",
             )}
             onClick={() => onCardClick?.(index)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onCardClick?.(index);
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={`Select flashcard ${index + 1}: ${flashcard.term}`}
           >
             <div className="flex flex-col items-start gap-4 p-4 sm:flex-row">
               <Card
@@ -61,7 +80,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
               {/*For Term and Definition */}
               <div className="min-h-[200px] flex-1 space-y-4">
                 <div>
-                  <Text className="mb-1 text-lg font-bold uppercase">Term</Text>
+                  <Text className="mb-1 text-lg uppercase">Term</Text>
                   <Text
                     className={cn("text-2xl transition", hideTerm && "blur-sm")}
                   >
@@ -70,11 +89,11 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({
                 </div>
                 <div className="border-t" />
                 <div className="space-y-4">
-                  <Text className="mb-1 text-lg font-bold uppercase">
+                  <Text className="mb-1 text-lg uppercase">
                     Definition
                   </Text>
                   <Text
-                    className={cn("text-2xl transition", hideDef && "blur-sm")}
+                    className={cn("text-2xl transition", hideDefinition && "blur-sm")}
                   >
                     {flashcard.definition}
                   </Text>
