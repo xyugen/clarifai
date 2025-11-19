@@ -21,7 +21,7 @@ const Page = async ({
     redirect(`${PageRoutes.STUDY}/${topicId}`);
   }
 
-  const questionData = await api.lesson.getQuestionByIndex({
+  const questionData = await api.lesson.getQuestionByIndexPublic({
     topicId,
     questionIndex: questionIndexInt,
   });

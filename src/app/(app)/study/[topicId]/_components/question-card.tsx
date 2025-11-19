@@ -3,6 +3,7 @@ import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { cn } from "@/lib/utils";
+import { getSession } from "@/server/better-auth/server";
 import { api } from "@/trpc/server";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -21,9 +22,14 @@ const QuestionCard: React.FC<QuestionCardProps> = async ({
   questionId,
   question,
 }) => {
-  const isAnswered = await api.lesson.isQuestionAnswered({
-    questionId: questionId,
-  });
+  const session = await getSession();
+  let isAnswered = false;
+
+  if (session?.user) {
+    isAnswered = await api.lesson.isQuestionAnswered({
+      questionId: questionId,
+    });
+  }
 
   return (
     <Card className="group w-full cursor-pointer bg-white p-6 transition-all hover:-translate-y-1">

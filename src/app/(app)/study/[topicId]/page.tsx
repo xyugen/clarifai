@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
   const { topicId } = await params;
 
-  const { topic } = await api.lesson.getLesson({ topicId: topicId });
+  const { topic } = await api.lesson.getLessonPublic({ topicId: topicId });
 
   return {
     title: topic.title,
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const Page = async ({ params }: Props) => {
   const { topicId } = await params;
-  const { topic, questions } = await api.lesson.getLesson({ topicId: topicId });
+  const { topic, questions } = await api.lesson.getLessonPublic({ topicId: topicId });
 
   return (
     <div className="min-h-screen bg-cyan-100">
