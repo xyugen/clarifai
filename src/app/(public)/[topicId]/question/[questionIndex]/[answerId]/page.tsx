@@ -18,16 +18,16 @@ const Page = async ({
   const questionIndexInt = parseInt(questionIndex, 10);
 
   if (Number.isNaN(questionIndexInt) || questionIndexInt < 0) {
-    redirect(`${PageRoutes.STUDY}/${topicId}`);
+    redirect(`/${topicId}`);
   }
 
-  const questionData = await api.lesson.getQuestionByIndex({
+  const questionData = await api.lesson.getQuestionByIndexPublic({
     topicId,
     questionIndex: questionIndexInt,
   });
 
   if (!questionData?.question) {
-    redirect(`${PageRoutes.STUDY}/${topicId}`);
+    redirect(`/${topicId}`);
   }
 
   const answerWithFeedback = await api.lesson.getAnswerWithFeedback({
@@ -35,7 +35,7 @@ const Page = async ({
   });
 
   if (!answerWithFeedback) {
-    redirect(`${PageRoutes.STUDY}/${topicId}/question/${questionIndex}`);
+    redirect(`/${topicId}/question/${questionIndex}`);
   }
 
   const { question, totalQuestions } = questionData;
@@ -51,7 +51,7 @@ const Page = async ({
       <div className="mx-auto max-w-4xl px-4 py-6">
         {/* Back Button */}
         <Link
-          href={`${PageRoutes.STUDY}/${topicId}/question/${questionIndex}`}
+          href={`/${topicId}/question/${questionIndex}`}
           className="mb-6 inline-flex items-center gap-2 border-2 border-black bg-white px-4 py-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-gray-50 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
         >
           <ArrowLeft className="size-4" />
@@ -141,7 +141,7 @@ const Page = async ({
               </Text>
             </div>
             <Link
-              href={`${PageRoutes.STUDY}/${topicId}/question/${questionIndex}`}
+              href={`/${topicId}/question/${questionIndex}`}
               className="border-2 border-black bg-yellow-400 px-6 py-3 whitespace-nowrap shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-yellow-500 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
             >
               ANSWER AGAIN →
