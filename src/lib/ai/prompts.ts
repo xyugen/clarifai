@@ -45,7 +45,7 @@ Follow these rules strictly:
 2. Generate a clear, descriptive title for the flashcard set that captures the main topic.
 3. Write a concise summary (2–3 sentences) that describes what the flashcard set covers.
 4. Create flashcards for each significant term or concept found in the text:
-   - The TERM should be a single word, phrase, or concept name (keep it short and specific).
+   - The TERM should be a single word, phrase, or concept name (keep it short and specific). Make sure it is clearly identifiable in the source text, and it is the main subject of the text.
    - The DEFINITION should be concise but complete - typically 1-3 sentences that capture the essential meaning.
    - The definition must match or closely approximate what the source text contains.
    - Avoid overly long definitions - focus on what's essential to remember.
