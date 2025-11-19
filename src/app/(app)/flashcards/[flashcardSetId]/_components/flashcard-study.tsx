@@ -18,28 +18,15 @@ import { useRouter } from "nextjs-toploader/app";
 import { useState } from "react";
 import DeleteFlashcardSetButton from "./delete-flashcard-set-button";
 import FlashcardPrivacyButton from "./flashcard-privacy-button";
+import FlashcardView from "./flashcard-view";
+import type { Flashcard, FlashcardSet } from "@/server/db/schema";
 
-type FlashcardSetType = {
-  id: string;
-  title: string;
-  summary: string | null;
-  authorId: string;
-  author: string | null;
-  visibility: string;
-  createdAt: Date;
-};
 
-type FlashcardType = {
-  id: string;
-  flashcardSetId: string;
-  term: string;
-  definition: string;
-};
 
 interface FlashcardStudyProps {
   userId: string;
-  flashcardSet: FlashcardSetType;
-  flashcards: FlashcardType[];
+  flashcardSet: FlashcardSet;
+  flashcards: Flashcard[];
 }
 
 const FlashcardStudy = ({
@@ -335,10 +322,21 @@ const FlashcardStudy = ({
 
         {/* Keyboard Shortcuts Hint - MINIMAL EMPHASIS */}
         <div className="mt-6 text-center">
-          <Text className="text-xs text-gray-500">
+          <Text className="text-xs text-gray-500 font-bold">
             💡 TIP: Use arrow keys (← →) to navigate • Space/Enter to flip
           </Text>
         </div>
+      </div>
+      <div>
+        <FlashcardView
+          flashcards={flashcards}
+          currentIndex={currentIndex}
+          onCardClick={(index) => {
+            setCurrentIndex(index);
+            setIsFlipped(false);
+                }
+              }
+            />
       </div>
     </div>
   );
