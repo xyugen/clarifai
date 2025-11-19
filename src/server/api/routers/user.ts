@@ -4,7 +4,7 @@ import {
   getUserById,
 } from "@/lib/db";
 import z from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
   getUserProfile: publicProcedure

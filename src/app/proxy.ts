@@ -1,24 +1,18 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getSession } from "@/server/better-auth/server";
 import { PageRoutes } from "@/constants/page-routes";
+import { getSession } from "@/server/better-auth/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 // Routes that always require authentication
 const AUTH_REQUIRED_ROUTES = [
   PageRoutes.DASHBOARD,
   PageRoutes.SETTINGS,
   PageRoutes.UPLOAD,
-  "/upload",
-  "/flashcards/upload",
-  "/create-flashcard",
+  PageRoutes.FLASHCARDS_UPLOAD,
 ];
 
 // Routes that allow anonymous access to public content
-const PUBLIC_CONTENT_ROUTES = [
-  "/study/",
-  "/flashcards/",
-  "/profile/",
-];
+const PUBLIC_CONTENT_ROUTES = ["/study/", "/flashcards/", "/profile/"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -36,12 +30,12 @@ export async function middleware(request: NextRequest) {
 
   // Check if route always requires auth
   const requiresAuth = AUTH_REQUIRED_ROUTES.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   // Check if route allows public content
   const allowsPublic = PUBLIC_CONTENT_ROUTES.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   // For routes that always require auth, check session
