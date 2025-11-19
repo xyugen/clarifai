@@ -6,6 +6,7 @@ import { Menu } from "@/components/retroui/Menu";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { cn } from "@/lib/utils";
+import type { Flashcard, FlashcardSet } from "@/server/db/schema";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,51 +14,39 @@ import {
   CreditCard,
   RotateCw,
   Settings,
+  Shuffle,
 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import DeleteFlashcardSetButton from "./delete-flashcard-set-button";
 import FlashcardPrivacyButton from "./flashcard-privacy-button";
-
-type FlashcardSetType = {
-  id: string;
-  title: string;
-  summary: string | null;
-  authorId: string;
-  author: string | null;
-  visibility: string;
-  createdAt: Date;
-};
-
-type FlashcardType = {
-  id: string;
-  flashcardSetId: string;
-  term: string;
-  definition: string;
-};
+import FlashcardView from "./flashcard-view";
 
 interface FlashcardStudyProps {
   userId: string;
-  flashcardSet: FlashcardSetType;
-  flashcards: FlashcardType[];
+  flashcardSet: FlashcardSet;
+  flashcards: Flashcard[];
 }
 
-const FlashcardStudy = ({
+const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
   userId,
   flashcardSet,
-  flashcards,
-}: FlashcardStudyProps) => {
+  flashcards: initialFlashcards,
+}) => {
   const router = useRouter();
+  const studyRef = useRef<HTMLDivElement>(null);
+  const [currentFlashcards, setCurrentFlashcards] =
+    useState<Flashcard[]>(initialFlashcards);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showTermFirst, setShowTermFirst] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const currentFlashcard = flashcards[currentIndex];
-  const progress = ((currentIndex + 1) / flashcards.length) * 100;
+  const currentFlashcard = currentFlashcards[currentIndex];
+  const progress = ((currentIndex + 1) / currentFlashcards.length) * 100;
 
   const handleNext = () => {
-    if (currentIndex < flashcards.length - 1) {
+    if (currentIndex < currentFlashcards.length - 1) {
       setIsTransitioning(true);
       setIsFlipped(false);
       setCurrentIndex(currentIndex + 1);
@@ -85,6 +74,17 @@ const FlashcardStudy = ({
       e.preventDefault();
       handleFlip();
     }
+  };
+
+  const shuffleFlashcards = () => {
+    const shuffled = [...initialFlashcards];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    }
+    setCurrentFlashcards(shuffled);
+    setCurrentIndex(0);
+    setIsFlipped(false);
   };
 
   if (!currentFlashcard) {
@@ -155,6 +155,11 @@ const FlashcardStudy = ({
                     {showTermFirst && <Check className="mr-2 size-4" />}Show
                     Term First
                   </Menu.Item>
+                  <div className="border-t" />
+                  <Menu.Item onSelect={shuffleFlashcards}>
+                    <Shuffle className="mr-2 size-4" />
+                    Shuffle Flashcards
+                  </Menu.Item>
                 </Menu.Content>
               </Menu>
 
@@ -188,7 +193,7 @@ const FlashcardStudy = ({
                 Progress
               </Text>
               <Text as="p" className="text-sm">
-                {currentIndex + 1} / {flashcards.length}
+                {currentIndex + 1} / {currentFlashcards.length}
               </Text>
             </div>
             <div className="h-3 border-2 border-black bg-gray-200">
@@ -202,7 +207,7 @@ const FlashcardStudy = ({
       </div>
 
       {/* Main Flashcard Area - HERO SECTION */}
-      <div className="mx-auto max-w-5xl sm:px-4">
+      <div ref={studyRef} className="mx-auto max-w-5xl sm:px-4">
         <div
           className="perspective-1000 relative mx-auto w-full"
           style={{ height: "500px" }}
@@ -213,7 +218,7 @@ const FlashcardStudy = ({
             } ${isFlipped ? "rotate-y-180" : ""}`}
             onClick={handleFlip}
             role="button"
-            aria-label={`Flashcard ${currentIndex + 1} of ${flashcards.length}. Click to flip. ${isFlipped ? "Showing back" : "Showing front"}`}
+            aria-label={`Flashcard ${currentIndex + 1} of ${currentFlashcards.length}. Click to flip. ${isFlipped ? "Showing back" : "Showing front"}`}
             tabIndex={0}
             style={{
               transformStyle: "preserve-3d",
@@ -329,7 +334,7 @@ const FlashcardStudy = ({
             variant="outline"
             size="md"
             onClick={handleNext}
-            disabled={currentIndex === flashcards.length - 1}
+            disabled={currentIndex === currentFlashcards.length - 1}
             className="bg-background disabled:cursor-not-allowed disabled:opacity-30 sm:w-full"
             aria-label="Next flashcard"
           >
@@ -344,6 +349,17 @@ const FlashcardStudy = ({
             💡 TIP: Use arrow keys (← →) to navigate • Space/Enter to flip
           </Text>
         </div>
+      </div>
+      <div className="mt-20">
+        <FlashcardView
+          flashcards={currentFlashcards}
+          currentIndex={currentIndex}
+          onCardClick={(index) => {
+            setCurrentIndex(index);
+            setIsFlipped(false);
+            studyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        />
       </div>
     </div>
   );
