@@ -17,7 +17,7 @@ import {
   Shuffle,
 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import DeleteFlashcardSetButton from "./delete-flashcard-set-button";
 import FlashcardPrivacyButton from "./flashcard-privacy-button";
 import FlashcardView from "./flashcard-view";
@@ -34,6 +34,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
   flashcards: initialFlashcards,
 }) => {
   const router = useRouter();
+  const studyRef = useRef<HTMLDivElement>(null);
   const [currentFlashcards, setCurrentFlashcards] =
     useState<Flashcard[]>(initialFlashcards);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -79,12 +80,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
     const shuffled = [...initialFlashcards];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      const temp = shuffled[i];
-      const itemJ = shuffled[j];
-      if (temp !== undefined && itemJ !== undefined) {
-        shuffled[i] = itemJ;
-        shuffled[j] = temp;
-      }
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
     }
     setCurrentFlashcards(shuffled);
     setCurrentIndex(0);
@@ -211,7 +207,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
       </div>
 
       {/* Main Flashcard Area - HERO SECTION */}
-      <div className="mx-auto max-w-5xl sm:px-4">
+      <div ref={studyRef} className="mx-auto max-w-5xl sm:px-4">
         <div
           className="perspective-1000 relative mx-auto w-full"
           style={{ height: "500px" }}
@@ -361,6 +357,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
           onCardClick={(index) => {
             setCurrentIndex(index);
             setIsFlipped(false);
+            studyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
         />
       </div>
