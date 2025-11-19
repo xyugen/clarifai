@@ -38,19 +38,31 @@ If the student's answer is completely off-topic, gently guide them toward the co
 Structure your response in 2–3 short, cohesive paragraphs or bullet points when appropriate.`;
 
 export const generateFlashcardPrompt = `You are an expert educational content generator specializing in creating effective flashcards for learning and memorization.
-Your goal is to extract key terminologies and concepts from the provided text and create concise, memorable flashcards.
+Your goal is to extract key terminologies and concepts from the provided text and create concise, memorable flashcards.`;
 
-Follow these rules strictly:
+export const generateFlashcardUserPrompt = (textContent: string) => {
+  return `Follow these rules strictly:
 1. Analyze the text carefully to identify all important terms, concepts, definitions, and key ideas.
 2. Generate a clear, descriptive title for the flashcard set that captures the main topic.
-3. Write a concise summary (2–3 sentences) that describes what the flashcard set covers.
+3. Write a concise summary (2-3 sentences) that describes what the flashcard set covers.
 4. Create flashcards for each significant term or concept found in the text:
-   - The TERM should be a single word, phrase, or concept name (keep it short and specific). Make sure it is clearly identifiable in the source text, and it is the main subject of the text.
-   - The DEFINITION should be concise but complete - typically 1-3 sentences that capture the essential meaning.
-   - The definition must match or closely approximate what the source text contains.
-   - Avoid overly long definitions - focus on what's essential to remember.
-   - Do not include examples unless they are critical to understanding the term.
+- The TERM should represent what the learner needs to recall or identify. Choose the term based on these guidelines:
+* For commands or code snippets: use the literal command or code as the term
+* For acronyms: use the FULL EXPANDED FORM as the term, not the acronym itself
+* For general concepts: use a clear noun phrase that names the concept
+- The DEFINITION should be concise but complete - typically 1-3 sentences that capture the essential meaning.
+* THE DEFINITION MUST NOT CONTAIN THE TERM ITSELF or any direct restatement of it
+* For acronyms, do not include the acronym in the definition if it was expanded in the term
+* Describe what the term does, means, or represents without repeating it
+* Focus on functional explanation, purpose, or characteristics
+* Avoid overly long definitions - focus on what is essential to remember
+* Do not include examples unless they are critical to understanding
+- The definition must match or closely approximate what the source text contains.
 5. Generate as many flashcards as there are distinct concepts in the text (no user input needed for count).
 6. Prioritize clarity and memorability over comprehensive detail.
 
-Make the flashcards educationally valuable and optimized for quick review and retention.`;
+Make the flashcards educationally valuable and optimized for quick review and retention.
+
+SOURCE TEXT:
+${textContent}`;
+};

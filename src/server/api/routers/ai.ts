@@ -7,6 +7,7 @@ import { loadFileChunks } from "@/lib/ai/groq";
 import {
   generateFeedbackPrompt,
   generateFlashcardPrompt,
+  generateFlashcardUserPrompt,
   generateQuestionPrompt,
 } from "@/lib/ai/prompts";
 import {
@@ -49,7 +50,7 @@ export const aiRouter = createTRPCRouter({
         session: { user },
       } = ctx;
       const numQuestions = numQuestionsRaw ?? 5;
-      
+
       // Check rate limit for AI generation
       await checkRateLimit(user.id, "ai:generate", RateLimits.AI_GENERATION);
 
@@ -241,7 +242,7 @@ export const aiRouter = createTRPCRouter({
           },
           {
             role: "user",
-            content: textChunks.join("\n\n"),
+            content: generateFlashcardUserPrompt(textChunks.join("\n\n")),
           },
         ],
         schema: flashcardSetSchema,
