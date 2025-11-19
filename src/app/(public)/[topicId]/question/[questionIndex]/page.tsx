@@ -70,6 +70,8 @@ const Page = async ({ params }: Props) => {
 
   const { question, totalQuestions } = questionData;
 
+  const isAuthenticated = !!session?.user;
+
   return (
     <div className="min-h-screen bg-cyan-100">
       <TopNav
@@ -85,6 +87,7 @@ const Page = async ({ params }: Props) => {
           totalQuestions={totalQuestions}
           questionText={question.text}
           latestAnswer={latestAnswer}
+          isAuthenticated={isAuthenticated}
         />
 
         {feedbackData && (

@@ -164,14 +164,15 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
               </Menu>
 
               {userId === flashcardSet.authorId && (
-                <FlashcardPrivacyButton flashcardSetId={flashcardSet.id} />
+                <>
+                  <FlashcardPrivacyButton flashcardSetId={flashcardSet.id} />
+                  <DeleteFlashcardSetButton
+                    flashcardSetId={flashcardSet.id}
+                    redirectUrl={PageRoutes.FLASHCARDS}
+                    showLabel={false}
+                  />
+                </>
               )}
-
-              <DeleteFlashcardSetButton
-                flashcardSetId={flashcardSet.id}
-                redirectUrl={PageRoutes.FLASHCARDS}
-                showLabel={false}
-              />
             </div>
           </div>
 

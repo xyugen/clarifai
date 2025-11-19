@@ -19,7 +19,7 @@ const TopNav: React.FC<TopNavProps> = ({
     <div className="border-b-2 border-black bg-white">
       <div className="mx-auto max-w-4xl px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link href={`${PageRoutes.STUDY}/${topicId}`}>
+          <Link href={`/${topicId}`}>
             <Button
               variant={"outline"}
               className="bg-bg-background hover:bg-foreground/1 flex items-center gap-2 px-4 py-2"
@@ -33,7 +33,7 @@ const TopNav: React.FC<TopNavProps> = ({
             {Array.from({ length: totalQuestions }).map((_, i) => (
               <Link
                 key={i}
-                href={`${PageRoutes.STUDY}/${topicId}/${PageRoutes.QUESTION}/${i + 1}`}
+                href={`/${topicId}/question/${i + 1}`}
                 className={`flex h-8 w-8 items-center justify-center border-2 border-black text-sm font-bold ${
                   i + 1 === currentQuestionIndex
                     ? "bg-primary"

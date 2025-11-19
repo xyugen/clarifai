@@ -1,9 +1,11 @@
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
+import { getSession } from "@/server/better-auth/server";
 import type { Answer } from "@/server/db/schema";
 import React from "react";
 import HistoryButton from "./history-button";
 import QuestionForm from "./question-form";
+import LoginPrompt from "./login-prompt";
 
 interface QuestionCardProps {
   questionId: string;
@@ -11,6 +13,7 @@ interface QuestionCardProps {
   totalQuestions: number;
   questionText: string;
   latestAnswer?: Answer | null;
+  isAuthenticated: boolean;
 }
 
 interface QuestionCardHeaderProps {
@@ -18,6 +21,7 @@ interface QuestionCardHeaderProps {
   currentQuestionIndex: number;
   totalQuestions: number;
   questionText: string;
+  isAuthenticated: boolean;
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -26,6 +30,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   totalQuestions,
   questionText,
   latestAnswer,
+  isAuthenticated,
 }) => {
   const isLastQuestion = currentQuestionIndex === totalQuestions;
 
@@ -36,14 +41,19 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         currentQuestionIndex={currentQuestionIndex}
         totalQuestions={totalQuestions}
         questionText={questionText}
+        isAuthenticated={isAuthenticated}
       />
 
-      <QuestionForm
-        questionId={questionId}
-        currentQuestionIndex={currentQuestionIndex}
-        isLastQuestion={isLastQuestion}
-        latestAnswer={latestAnswer?.userAnswer}
-      />
+      {isAuthenticated ? (
+        <QuestionForm
+          questionId={questionId}
+          currentQuestionIndex={currentQuestionIndex}
+          isLastQuestion={isLastQuestion}
+          latestAnswer={latestAnswer?.userAnswer}
+        />
+      ) : (
+        <LoginPrompt />
+      )}
     </Card>
   );
 };
@@ -53,6 +63,7 @@ const QuestionCardHeader: React.FC<QuestionCardHeaderProps> = ({
   currentQuestionIndex,
   totalQuestions,
   questionText,
+  isAuthenticated,
 }) => {
   return (
     <div className="mb-6 space-y-4">
@@ -65,7 +76,7 @@ const QuestionCardHeader: React.FC<QuestionCardHeaderProps> = ({
             QUESTION {currentQuestionIndex} OF {totalQuestions}
           </div>
         </div>
-        <HistoryButton questionId={questionId} questionText={questionText} />
+        {isAuthenticated && <HistoryButton questionId={questionId} questionText={questionText} />}
       </div>
       <Text
         as="h2"

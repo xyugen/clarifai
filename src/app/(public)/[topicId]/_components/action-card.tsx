@@ -24,7 +24,7 @@ const ActionCard: React.FC<ActionCardProps> = ({ topicId }) => {
           </Text>
         </div>
 
-        <Link href={`${PageRoutes.STUDY}/${topicId}/question/1`}>
+        <Link href={`/${topicId}/question/1`}>
           <Button className="bg-primary hover:bg-primary flex items-center gap-2 border-black px-4 py-2 font-sans font-bold transition-all hover:translate-x-0.5 hover:translate-y-0.5">
             START LEARNING
             <ArrowRight
