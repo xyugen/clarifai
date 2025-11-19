@@ -22,9 +22,59 @@ import {
 } from "@/lib/redis/cache";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const lessonRouter = createTRPCRouter({
+  getLessonPublic: publicProcedure
+    .input(
+      z.object({
+        topicId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { topicId } = input;
+      const userId = ctx.session?.user?.id;
+
+      // Try to get from cache first
+      const cacheKey = `${CachePrefix.LESSON}${topicId}`;
+      const cached = await getCached<{
+        topic: Awaited<ReturnType<typeof getLesson>>["topic"];
+        questions: Awaited<ReturnType<typeof getLesson>>["questions"];
+      }>(cacheKey);
+
+      if (cached) {
+        // Check authorization for cached data
+        if (cached.topic.visibility === "private") {
+          // Private topics require authentication and ownership
+          if (!userId || cached.topic.authorId !== userId) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "Unauthorized access to lesson",
+            });
+          }
+        }
+        return cached;
+      }
+
+      // If not in cache, fetch from database
+      const { topic, questions } = await getLesson(topicId);
+
+      // Check authorization
+      if (topic.visibility === "private") {
+        // Private topics require authentication and ownership
+        if (!userId || topic.authorId !== userId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Unauthorized access to lesson",
+          });
+        }
+      }
+
+      // Cache the result
+      await setCached(cacheKey, { topic, questions }, CacheTTL.LESSON);
+
+      return { topic, questions };
+    }),
   getLesson: protectedProcedure
     .input(
       z.object({
@@ -72,6 +122,42 @@ export const lessonRouter = createTRPCRouter({
       await setCached(cacheKey, { topic, questions }, CacheTTL.LESSON);
 
       return { topic, questions };
+    }),
+  getQuestionByIndexPublic: publicProcedure
+    .input(
+      z.object({
+        topicId: z.string(),
+        questionIndex: z.number(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { topicId, questionIndex } = input;
+      const userId = ctx.session?.user?.id;
+
+      const { topic, question, totalQuestions } = await getQuestionByIndex(
+        topicId,
+        questionIndex,
+      );
+
+      // Check authorization
+      if (topic.visibility === "private") {
+        // Private topics require authentication and ownership
+        if (!userId || topic.authorId !== userId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Unauthorized access to lesson",
+          });
+        }
+      }
+
+      if (!question) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Question not found",
+        });
+      }
+
+      return { question, totalQuestions };
     }),
   getQuestionByIndex: protectedProcedure
     .input(

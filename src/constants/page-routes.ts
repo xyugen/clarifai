@@ -11,4 +11,5 @@ export enum PageRoutes {
   QUESTION = "/question",
   PROFILE = "/profile",
   FLASHCARDS = "/flashcards",
+  FLASHCARDS_UPLOAD = "/flashcards/upload",
 }

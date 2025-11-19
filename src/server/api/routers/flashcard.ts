@@ -14,9 +14,65 @@ import {
 } from "@/lib/redis/cache";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const flashcardRouter = createTRPCRouter({
+  getFlashcardSetPublic: publicProcedure
+    .input(
+      z.object({
+        flashcardSetId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { flashcardSetId } = input;
+      const userId = ctx.session?.user?.id;
+
+      // Try to get from cache first
+      const cacheKey = `${CachePrefix.LESSON}flashcard:${flashcardSetId}`;
+      const cached = await getCached<{
+        flashcardSet: Awaited<ReturnType<typeof getFlashcardSet>>["flashcardSet"];
+        flashcards: Awaited<ReturnType<typeof getFlashcardSet>>["flashcards"];
+      }>(cacheKey);
+
+      if (cached) {
+        // Check authorization for cached data
+        if (cached.flashcardSet.visibility === "private") {
+          // Private flashcard sets require authentication and ownership
+          if (!userId || cached.flashcardSet.authorId !== userId) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "Unauthorized access to flashcard set",
+            });
+          }
+        }
+        return cached;
+      }
+
+      // If not in cache, fetch from database
+      const { flashcardSet, flashcards } =
+        await getFlashcardSet(flashcardSetId);
+
+      // Check authorization
+      if (flashcardSet.visibility === "private") {
+        // Private flashcard sets require authentication and ownership
+        if (!userId || flashcardSet.authorId !== userId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Unauthorized access to flashcard set",
+          });
+        }
+      }
+
+      // Cache the result
+      await setCached(
+        cacheKey,
+        { flashcardSet, flashcards },
+        CacheTTL.LESSON,
+      );
+
+      return { flashcardSet, flashcards };
+    }),
+
   getFlashcardSet: protectedProcedure
     .input(
       z.object({

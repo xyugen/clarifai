@@ -2,6 +2,7 @@ import DeleteTopicButton from "@/components/delete-topic-button";
 import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
+import { getSession } from "@/server/better-auth/server";
 import { formatDate } from "date-fns";
 import { BookOpen, Clock, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +18,7 @@ interface HeaderProps {
   questionCount: number;
 }
 
-const Header: React.FC<HeaderProps> = ({
+const Header: React.FC<HeaderProps> = async ({
   topicId,
   title,
   author,
@@ -25,6 +26,9 @@ const Header: React.FC<HeaderProps> = ({
   createdAt,
   questionCount,
 }: HeaderProps) => {
+  const session = await getSession();
+  const isOwner = session?.user?.id === authorId;
+
   return (
     <div className="border-b-2 border-black bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
@@ -38,12 +42,14 @@ const Header: React.FC<HeaderProps> = ({
                 <span className="text-xs font-bold">LESSON OVERVIEW</span>
               </Card>
 
-              <DeleteTopicButton
-                topicId={topicId}
-                redirectUrl={PageRoutes.STUDY}
-                className="h-10"
-                showLabel
-              />
+              {isOwner && (
+                <DeleteTopicButton
+                  topicId={topicId}
+                  redirectUrl={PageRoutes.STUDY}
+                  className="h-10"
+                  showLabel
+                />
+              )}
             </div>
             <Text
               as="h1"
@@ -70,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({
                 <MessageSquare className="size-4" />
                 <span>{questionCount} Questions</span>
               </div>
-              <PrivacyButton topicId={topicId} />
+              {isOwner && <PrivacyButton topicId={topicId} />}
             </div>
           </div>
         </div>

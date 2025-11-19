@@ -23,7 +23,7 @@ import FlashcardPrivacyButton from "./flashcard-privacy-button";
 import FlashcardView from "./flashcard-view";
 
 interface FlashcardStudyProps {
-  userId: string;
+  userId: string | null;
   flashcardSet: FlashcardSet;
   flashcards: Flashcard[];
 }
@@ -164,14 +164,15 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
               </Menu>
 
               {userId === flashcardSet.authorId && (
-                <FlashcardPrivacyButton flashcardSetId={flashcardSet.id} />
+                <>
+                  <FlashcardPrivacyButton flashcardSetId={flashcardSet.id} />
+                  <DeleteFlashcardSetButton
+                    flashcardSetId={flashcardSet.id}
+                    redirectUrl={PageRoutes.FLASHCARDS}
+                    showLabel={false}
+                  />
+                </>
               )}
-
-              <DeleteFlashcardSetButton
-                flashcardSetId={flashcardSet.id}
-                redirectUrl={PageRoutes.FLASHCARDS}
-                showLabel={false}
-              />
             </div>
           </div>
 
@@ -251,7 +252,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
 
               {/* Main Content */}
               <div className="flex w-full flex-1 items-center justify-center">
-                <Text className="max-w-3xl text-center text-3xl leading-tight md:text-5xl">
+                <Text className="max-w-3xl text-center text-3xl leading-tight md:text-4xl">
                   {showTermFirst
                     ? currentFlashcard.term
                     : currentFlashcard.definition}
@@ -289,7 +290,7 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
 
               {/* Main Content */}
               <div className="flex w-full flex-1 items-center justify-center">
-                <Text className="max-w-3xl text-center text-2xl leading-relaxed md:text-4xl">
+                <Text className="max-w-3xl text-center text-3xl leading-relaxed md:text-4xl">
                   {showTermFirst
                     ? currentFlashcard.definition
                     : currentFlashcard.term}
@@ -357,7 +358,10 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
           onCardClick={(index) => {
             setCurrentIndex(index);
             setIsFlipped(false);
-            studyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            studyRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
           }}
         />
       </div>
