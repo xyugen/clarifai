@@ -6,6 +6,7 @@ import { Menu } from "@/components/retroui/Menu";
 import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { cn } from "@/lib/utils";
+import type { Flashcard, FlashcardSet } from "@/server/db/schema";
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,13 +16,10 @@ import {
   Settings,
 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
-import { useState } from "react";
+import React, { useState } from "react";
 import DeleteFlashcardSetButton from "./delete-flashcard-set-button";
 import FlashcardPrivacyButton from "./flashcard-privacy-button";
 import FlashcardView from "./flashcard-view";
-import type { Flashcard, FlashcardSet } from "@/server/db/schema";
-
-
 
 interface FlashcardStudyProps {
   userId: string;
@@ -29,11 +27,11 @@ interface FlashcardStudyProps {
   flashcards: Flashcard[];
 }
 
-const FlashcardStudy = ({
+const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
   userId,
   flashcardSet,
   flashcards,
-}: FlashcardStudyProps) => {
+}) => {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -327,7 +325,7 @@ const FlashcardStudy = ({
 
         {/* Keyboard Shortcuts Hint - MINIMAL EMPHASIS */}
         <div className="mt-6 text-center">
-          <Text className="text-xs text-gray-500 font-bold">
+          <Text className="text-xs text-gray-500">
             💡 TIP: Use arrow keys (← →) to navigate • Space/Enter to flip
           </Text>
         </div>
@@ -339,9 +337,8 @@ const FlashcardStudy = ({
           onCardClick={(index) => {
             setCurrentIndex(index);
             setIsFlipped(false);
-                }
-              }
-            />
+          }}
+        />
       </div>
     </div>
   );
