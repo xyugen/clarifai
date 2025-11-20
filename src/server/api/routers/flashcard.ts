@@ -2,6 +2,8 @@ import {
   deleteFlashcardSetById,
   getFlashcardSet,
   getFlashcardSetsForUser,
+  updateFlashcard,
+  updateFlashcardSet,
   updateFlashcardSetVisibility,
 } from "@/lib/db";
 import {
@@ -238,6 +240,83 @@ export const flashcardRouter = createTRPCRouter({
       }
 
       await updateFlashcardSetVisibility(flashcardSetId, visibility);
+
+      // Invalidate related caches
+      await Promise.all([
+        deleteCached(`${CachePrefix.LESSON}flashcard:${flashcardSetId}`),
+        deleteCachedByPattern(
+          `${CachePrefix.USER_TOPICS}flashcard:${user.id}:*`,
+        ),
+      ]);
+    }),
+
+  updateFlashcardSetInfo: protectedProcedure
+    .input(
+      z.object({
+        flashcardSetId: z.string(),
+        title: z.string().min(1).optional(),
+        summary: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { flashcardSetId, title, summary } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      const { flashcardSet } = await getFlashcardSet(flashcardSetId);
+
+      if (flashcardSet.authorId !== user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized access to flashcard set",
+        });
+      }
+
+      const updateData: { title?: string; summary?: string } = {};
+      if (title !== undefined) updateData.title = title;
+      if (summary !== undefined) updateData.summary = summary;
+
+      await updateFlashcardSet(flashcardSetId, updateData);
+
+      // Invalidate related caches
+      await Promise.all([
+        deleteCached(`${CachePrefix.LESSON}flashcard:${flashcardSetId}`),
+        deleteCachedByPattern(
+          `${CachePrefix.USER_TOPICS}flashcard:${user.id}:*`,
+        ),
+      ]);
+    }),
+
+  updateFlashcardContent: protectedProcedure
+    .input(
+      z.object({
+        flashcardId: z.string(),
+        flashcardSetId: z.string(),
+        term: z.string().min(1).optional(),
+        definition: z.string().min(1).optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { flashcardId, flashcardSetId, term, definition } = input;
+      const {
+        session: { user },
+      } = ctx;
+
+      const { flashcardSet } = await getFlashcardSet(flashcardSetId);
+
+      if (flashcardSet.authorId !== user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized access to flashcard",
+        });
+      }
+
+      const updateData: { term?: string; definition?: string } = {};
+      if (term !== undefined) updateData.term = term;
+      if (definition !== undefined) updateData.definition = definition;
+
+      await updateFlashcard(flashcardId, updateData);
 
       // Invalidate related caches
       await Promise.all([

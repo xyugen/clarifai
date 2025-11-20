@@ -216,3 +216,37 @@ export const getPublicFlashcardSetsForUser = async (userId: string) => {
 
   return flashcardSetsWithCount;
 };
+
+export const updateFlashcardSet = async (
+  flashcardSetId: string,
+  data: { title?: string; summary?: string },
+) => {
+  const res = await db
+    .update(flashcardSetTable)
+    .set(data)
+    .where(eq(flashcardSetTable.id, flashcardSetId));
+
+  if (res.rowsAffected === 0) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Flashcard set not found",
+    });
+  }
+};
+
+export const updateFlashcard = async (
+  flashcardId: string,
+  data: { term?: string; definition?: string },
+) => {
+  const res = await db
+    .update(flashcardTable)
+    .set(data)
+    .where(eq(flashcardTable.id, flashcardId));
+
+  if (res.rowsAffected === 0) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Flashcard not found",
+    });
+  }
+};
