@@ -7,6 +7,7 @@ import { Text } from "@/components/retroui/Text";
 import { PageRoutes } from "@/constants/page-routes";
 import { cn } from "@/lib/utils";
 import type { Flashcard, FlashcardSet } from "@/server/db/schema";
+import { api } from "@/trpc/react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,7 +19,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import React, { useRef, useState } from "react";
+import { toast } from "sonner";
 import DeleteFlashcardSetButton from "./delete-flashcard-set-button";
+import { EditableText } from "./editable-text";
 import FlashcardPrivacyButton from "./flashcard-privacy-button";
 import FlashcardView from "./flashcard-view";
 
@@ -30,17 +33,46 @@ interface FlashcardStudyProps {
 
 const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
   userId,
-  flashcardSet,
+  flashcardSet: initialFlashcardSet,
   flashcards: initialFlashcards,
 }) => {
   const router = useRouter();
   const studyRef = useRef<HTMLDivElement>(null);
+  const [flashcardSet, setFlashcardSet] =
+    useState<FlashcardSet>(initialFlashcardSet);
   const [currentFlashcards, setCurrentFlashcards] =
     useState<Flashcard[]>(initialFlashcards);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showTermFirst, setShowTermFirst] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const updateFlashcardSetMutation =
+    api.flashcard.updateFlashcardSetInfo.useMutation({
+      onSuccess: () => {
+        toast.success("Flashcard set updated successfully");
+        router.refresh();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to update flashcard set");
+      },
+    });
+
+  const handleUpdateTitle = (title: string) => {
+    setFlashcardSet((prev) => ({ ...prev, title }));
+    updateFlashcardSetMutation.mutate({
+      flashcardSetId: flashcardSet.id,
+      title,
+    });
+  };
+
+  const handleUpdateSummary = (summary: string) => {
+    setFlashcardSet((prev) => ({ ...prev, summary }));
+    updateFlashcardSetMutation.mutate({
+      flashcardSetId: flashcardSet.id,
+      summary,
+    });
+  };
 
   const currentFlashcard = currentFlashcards[currentIndex];
   const progress = ((currentIndex + 1) / currentFlashcards.length) * 100;
@@ -177,13 +209,24 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
           </div>
 
           <div className="mb-4 space-y-2">
-            <Text as="h1" className="text-2xl md:text-3xl">
-              {flashcardSet.title}
-            </Text>
-            {flashcardSet.summary && (
-              <Text as="p" className="text-gray-600">
-                {flashcardSet.summary}
-              </Text>
+            <EditableText
+              value={flashcardSet.title}
+              onSave={handleUpdateTitle}
+              as="h1"
+              className="text-2xl md:text-3xl"
+              placeholder="Flashcard Set Title"
+              canEdit={userId === flashcardSet.authorId}
+            />
+            {(flashcardSet.summary ?? userId === flashcardSet.authorId) && (
+              <EditableText
+                value={flashcardSet.summary ?? ""}
+                onSave={handleUpdateSummary}
+                as="p"
+                className="text-gray-600"
+                placeholder="Add a summary (optional)"
+                multiline
+                canEdit={userId === flashcardSet.authorId}
+              />
             )}
           </div>
 
@@ -355,6 +398,16 @@ const FlashcardStudy: React.FC<FlashcardStudyProps> = ({
         <FlashcardView
           flashcards={currentFlashcards}
           currentIndex={currentIndex}
+          flashcardSetId={flashcardSet.id}
+          userId={userId}
+          authorId={flashcardSet.authorId}
+          onFlashcardUpdate={(updatedFlashcard) => {
+            setCurrentFlashcards((prev) =>
+              prev.map((fc) =>
+                fc.id === updatedFlashcard.id ? updatedFlashcard : fc,
+              ),
+            );
+          }}
           onCardClick={(index) => {
             setCurrentIndex(index);
             setIsFlipped(false);
