@@ -4,7 +4,7 @@ import { Input } from "@/components/retroui/Input";
 import { Textarea } from "@/components/retroui/Textarea";
 import { cn } from "@/lib/utils";
 import { Check, Pencil, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EditableTextProps {
   value: string;
@@ -27,6 +27,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
+
+  // Sync editValue with value prop when it changes
+  useEffect(() => {
+    setEditValue(value);
+  }, [value]);
 
   const handleSave = () => {
     if (editValue.trim() && editValue !== value) {
